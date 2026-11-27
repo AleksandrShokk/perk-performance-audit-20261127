@@ -773,6 +773,7 @@ def funnel_report(
             "wildberries",
             start,
             end,
+            redis=request.app.state.redis,
         ),
     }
     return {

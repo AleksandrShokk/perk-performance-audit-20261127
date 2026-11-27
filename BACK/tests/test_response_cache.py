@@ -123,3 +123,48 @@ def test_funnel_label_lookup_is_a_bounded_key_range():
     # A year view searches only its last 31 days, through the primary-key range.
     assert "wb_records.record_key >= '2026-10-27:'" in sql
     assert "wb_records.record_key < '2026-11-27:'" in sql
+
+
+class PipelineRedis(FakeRedis):
+    def mget(self, keys):
+        return [self.values.get(key) for key in keys]
+
+    def pipeline(self, transaction=True):
+        redis = self
+
+        class Pipe:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                return False
+
+            def set(self, key, value, ex=None):
+                redis.set(key, value, ex=ex)
+
+            def execute(self):
+                return []
+
+        return Pipe()
+
+
+def test_funnel_labels_are_searched_once_and_misses_expire_sooner(vault):
+    redis = PipelineRedis()
+    cache = product_labels.LabelCache(
+        redis, vault, "w", "s", date(2026, 11, 20), date(2026, 11, 26)
+    )
+    assert cache.known({"1", "2"}) == {}
+    cache.store({"1", "2"}, {"1": "VEND-1"})
+    assert cache.known({"1", "2", "3"}) == {"1": "VEND-1", "2": None}
+    assert sorted(redis.ttl.values()) == [
+        product_labels.LabelCache.MISSING_SECONDS,
+        product_labels.LabelCache.FOUND_SECONDS,
+    ]
+    # A miss is remembered only for the same period; a found code for any period.
+    other = product_labels.LabelCache(
+        redis, vault, "w", "s", date(2026, 11, 13), date(2026, 11, 19)
+    )
+    assert other.known({"1", "2"}) == {"1": "VEND-1"}
+    # Another store never sees these entries.
+    assert product_labels.LabelCache(redis, vault, "w", "x", None, None).known({"1"}) == {}
+    assert all("VEND" not in value for value in redis.values.values())

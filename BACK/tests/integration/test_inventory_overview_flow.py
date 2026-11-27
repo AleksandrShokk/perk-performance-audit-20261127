@@ -171,3 +171,28 @@ def test_inventory_retains_old_price_snapshot_but_marks_value_stale(setup, owner
         run.finished_at = now() - timedelta(days=3)
     result = c.get(path(s), params={"coverage_channel": "all", "store_id": str(s.store_id)}).json()
     assert result["total"]["retail_value"] == "1100.00" and result["total"]["stale"]
+
+
+def test_inventory_pages_match_the_full_list_and_cached_answers(setup, owner_client):
+    s, c = setup, owner_client[0]
+    seed(s, Source.CATALOG, [(str(n), card(article=str(n), vendor=f"V{n % 7}")) for n in range(30)])
+    seed(
+        s,
+        Source.STOCKS,
+        [(f"{n}:10:1", stock(article=str(n), quantity=n % 4)) for n in range(30)],
+    )
+    params = {"coverage_channel": "fbo", "store_id": str(s.store_id)}
+    full = c.get(path(s), params={**params, "limit": 100}).json()
+    assert full["count"] == 30 and len(full["items"]) == 30
+    pages = [
+        c.get(path(s), params={**params, "limit": 7, "offset": offset}).json()
+        for offset in range(0, 30, 7)
+    ]
+    assert [item for page in pages for item in page["items"]] == full["items"]
+    assert all(page["fbo"] == full["fbo"] and page["count"] == 30 for page in pages)
+    # A repeated read (served from the cache) is identical; new stock replaces it.
+    assert c.get(path(s), params={**params, "limit": 100}).json() == full
+    # A new publication (new successful run) adds stock in another warehouse.
+    seed(s, Source.STOCKS, [("0:10:2", stock(article="0", warehouse="Казань", quantity=50))])
+    changed = c.get(path(s), params={**params, "limit": 100}).json()
+    assert changed["fbo"]["units"] != full["fbo"]["units"]

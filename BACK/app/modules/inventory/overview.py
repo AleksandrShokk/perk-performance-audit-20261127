@@ -19,7 +19,7 @@ from app.modules.inventory.overview_schemas import (
     InventoryPosition,
 )
 from app.modules.inventory.stock_cover import WINDOW, coverage_summary, product_coverage
-from app.modules.sync.read import retained, source_states
+from app.modules.sync.read import read_once, retained, source_states
 
 
 def amount(value):
@@ -99,7 +99,39 @@ def wb_overview(
     offset=0,
     coverage_channel="fbo",
 ):
-    positions, channel_totals = [], {"fbo": [], "fbs": []}
+    # The catalog part reads stocks too: decrypt each snapshot once per call.
+    with read_once(db):
+        return build_wb_overview(
+            db,
+            vault,
+            workspace_id,
+            stores,
+            currency,
+            can_cost,
+            query,
+            only_stock,
+            limit,
+            offset,
+            coverage_channel,
+        )
+
+
+def build_wb_overview(
+    db,
+    vault,
+    workspace_id,
+    stores,
+    currency,
+    can_cost,
+    query,
+    only_stock,
+    limit,
+    offset,
+    coverage_channel,
+):
+    # Positions are assembled only for the requested page: totals need every SKU, but a
+    # dashboard page shows 10-20 of ~1000 (each with variants and warehouses).
+    pending, channel_totals = [], {"fbo": [], "fbs": []}
     history_source = {
         "fbo": Source.SUPPLY_DEMAND,
         "fbs": Source.SUPPLY_DEMAND_FBS,
@@ -184,26 +216,6 @@ def wb_overview(
                         warehouses=[],
                         unit_cost=None,
                     )
-            if limit:
-                for chrt, variant in list(variants.items()):
-                    fbo_rows = [row for row in stocks["fbo"][article] if row["chrt_id"] == chrt]
-                    warehouses = defaultdict(int)
-                    for row in fbo_rows:
-                        warehouses[row["warehouse_name"]] += row["quantity"]
-                    variants[chrt] = variant.model_copy(
-                        update={
-                            "stock": sum(row["quantity"] for row in fbo_rows)
-                            if successful[Source.STOCKS]
-                            else None,
-                            "warehouses": [
-                                WarehouseStock(name=name, quantity=quantity)
-                                for name, quantity in warehouses.items()
-                            ],
-                        }
-                    )
-                product = ProductItem.model_validate(
-                    {**product.model_dump(), "variants": list(variants.values())}
-                )
             price_row = prices.get(article, {})
             current_prices = (
                 price_row.get("prices", {}) if price_row.get("currency") == currency else {}
@@ -233,24 +245,17 @@ def wb_overview(
             position_count += 1
             if not limit:
                 continue
-            fbs_sizes = defaultdict(lambda: {"quantity": 0, "warehouses": defaultdict(int)})
-            for row in stocks["fbs"][article]:
-                target = fbs_sizes[row["chrt_id"]]
-                target["quantity"] += row["quantity"]
-                target["warehouses"][row["warehouse_name"]] += row["quantity"]
-            cover_days, cover_status = product_coverage(
-                history_rows.get(article), loading=history_loading
-            )
-            positions.append(
-                InventoryPosition(
-                    product=product,
-                    coverage_channel=coverage_channel,
-                    **metrics,
-                    fbs_sizes=[
-                        FbsSizeStock(chrt_id=key, **value) for key, value in fbs_sizes.items()
-                    ],
-                    turnover_days=cover_days,
-                    turnover_status=cover_status,
+            pending.append(
+                (
+                    (product.vendor_code.casefold(), product.nm_id, str(product.store_id)),
+                    product,
+                    variants,
+                    metrics,
+                    stocks["fbo"][article],
+                    stocks["fbs"][article],
+                    bool(successful[Source.STOCKS]),
+                    history_rows.get(article),
+                    history_loading,
                 )
             )
         # Empty confirmed catalogs still have a known zero balance.
@@ -260,13 +265,8 @@ def wb_overview(
                     valuation([], bool(successful[source]), {}, {}, can_cost)
                 )
     fbo, fbs = [combine(channel_totals[channel], can_cost) for channel in ("fbo", "fbs")]
-    positions.sort(
-        key=lambda row: (
-            row.product.vendor_code.casefold(),
-            row.product.nm_id,
-            str(row.product.store_id),
-        )
-    )
+    pending.sort(key=lambda row: row[0])
+    positions = [position(coverage_channel, *row[1:]) for row in pending[offset : offset + limit]]
     cover, partial = coverage_summary(report_rows) if reports_complete else (None, False)
     return InventoryOverview(
         coverage_channel=coverage_channel,
@@ -279,7 +279,7 @@ def wb_overview(
         turnover_loading=report_loading,
         turnover_stale=any(now() - value > timedelta(days=2) for value in report_dates),
         observed_days=WINDOW if reports_complete else 0,
-        items=positions[offset : offset + limit],
+        items=positions,
         count=position_count,
         limit=limit,
         offset=offset,
@@ -287,6 +287,51 @@ def wb_overview(
         can_cost=can_cost,
         is_loading=loading,
         missing_sources=sorted(missing),
+    )
+
+
+def position(
+    coverage_channel,
+    product,
+    variants,
+    metrics,
+    fbo_stock,
+    fbs_stock,
+    stocks_known,
+    history_row,
+    history_loading,
+):
+    variants = dict(variants)
+    for chrt, variant in list(variants.items()):
+        fbo_rows = [row for row in fbo_stock if row["chrt_id"] == chrt]
+        warehouses = defaultdict(int)
+        for row in fbo_rows:
+            warehouses[row["warehouse_name"]] += row["quantity"]
+        variants[chrt] = variant.model_copy(
+            update={
+                "stock": sum(row["quantity"] for row in fbo_rows) if stocks_known else None,
+                "warehouses": [
+                    WarehouseStock(name=name, quantity=quantity)
+                    for name, quantity in warehouses.items()
+                ],
+            }
+        )
+    product = ProductItem.model_validate(
+        {**product.model_dump(), "variants": list(variants.values())}
+    )
+    fbs_sizes = defaultdict(lambda: {"quantity": 0, "warehouses": defaultdict(int)})
+    for row in fbs_stock:
+        target = fbs_sizes[row["chrt_id"]]
+        target["quantity"] += row["quantity"]
+        target["warehouses"][row["warehouse_name"]] += row["quantity"]
+    cover_days, cover_status = product_coverage(history_row, loading=history_loading)
+    return InventoryPosition(
+        product=product,
+        coverage_channel=coverage_channel,
+        **metrics,
+        fbs_sizes=[FbsSizeStock(chrt_id=key, **value) for key, value in fbs_sizes.items()],
+        turnover_days=cover_days,
+        turnover_status=cover_status,
     )
 
 

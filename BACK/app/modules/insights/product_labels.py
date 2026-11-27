@@ -4,6 +4,8 @@ import json
 import logging
 from datetime import timedelta
 
+from cryptography.exceptions import InvalidTag
+from redis.exceptions import RedisError
 from sqlalchemy import func, select
 from sqlalchemy.exc import DBAPIError
 
@@ -56,7 +58,9 @@ def labels(rows, marketplace):
     return {code: value for code, value in result.items() if code not in ambiguous}
 
 
-def enrich(products, db, vault, workspace_id, store_id, marketplace, start=None, end=None):
+def enrich(
+    products, db, vault, workspace_id, store_id, marketplace, start=None, end=None, redis=None
+):
     if not products:
         return products
     if marketplace == "ozon":
@@ -71,7 +75,13 @@ def enrich(products, db, vault, workspace_id, store_id, marketplace, start=None,
             for product in products
             if not metadata.get(str(product["nm_id"]), {}).get("vendor_code")
         }
+        cache = LabelCache(redis, vault, workspace_id, store_id, start, end)
+        for code, vendor in cache.known(missing).items():
+            if vendor:
+                metadata.setdefault(code, {})["vendor_code"] = vendor
+            missing.discard(code)
         if missing:
+            found = {}
             for key, ciphertext in funnel_labels(db, workspace_id, store_id, missing, start, end):
                 row = json.loads(
                     vault.open(ciphertext, context(workspace_id, store_id, Source.FUNNEL, key))
@@ -80,6 +90,8 @@ def enrich(products, db, vault, workspace_id, store_id, marketplace, start=None,
                 vendor = row.get("vendor_code")
                 if vendor:
                     metadata.setdefault(code, {})["vendor_code"] = vendor
+                    found[code] = vendor
+            cache.store(missing, found)
     # Match only native IDs inside this store. Never join by article, title or another store.
     return [
         {
@@ -127,3 +139,74 @@ def funnel_labels(db, workspace_id, store_id, missing, start, end):
     except DBAPIError:
         logger.warning("funnel_labels_unavailable")
         return []
+
+
+class LabelCache:
+    """Vendor codes found in funnel records, so a chart does not search them on every read.
+
+    A found code is kept for a day per article; "not found" only for an hour and only for
+    the same period, because a later import can add the article's records. Values are
+    sealed like every other cache entry; any Redis problem just means a lookup.
+    """
+
+    FOUND_SECONDS = 24 * 3600
+    MISSING_SECONDS = 3600
+
+    def __init__(self, redis, vault, workspace_id, store_id, start, end):
+        self.redis, self.vault = redis, vault
+        self.scope = f"{workspace_id}:{store_id}"
+        self.period = f"{start}:{end}"
+
+    def keys(self, code):
+        found = f"{self.scope}:{code}"
+        missing = f"{found}:{self.period}"
+        return [
+            ("perk:label:" + self.vault.digest("funnel-label", found), found),
+            ("perk:label:" + self.vault.digest("funnel-label-missing", missing), missing),
+        ]
+
+    def known(self, codes):
+        if self.redis is None or not codes:
+            return {}
+        codes = sorted(codes)
+        try:
+            values = self.redis.mget([key for code in codes for key, _ in self.keys(code)])
+        except RedisError:
+            return {}
+        result = {}
+        for index, code in enumerate(codes):
+            pairs = zip(self.keys(code), values[2 * index : 2 * index + 2], strict=True)
+            for (_, context_aad), value in pairs:
+                if not isinstance(value, (str, bytes)):
+                    continue
+                try:
+                    opened = self.vault.open(
+                        value.decode() if isinstance(value, bytes) else value, context_aad
+                    )
+                except InvalidTag, ValueError:
+                    continue
+                result[code] = json.loads(opened).get("vendor_code") or None
+                break
+        return result
+
+    def store(self, codes, found):
+        if self.redis is None:
+            return
+        try:
+            with self.redis.pipeline(transaction=False) as pipe:
+                for code in codes:
+                    (found_key, found_aad), (missing_key, missing_aad) = self.keys(code)
+                    if code in found:
+                        value = json.dumps({"vendor_code": found[code]})
+                        pipe.set(
+                            found_key, self.vault.seal(value, found_aad), ex=self.FOUND_SECONDS
+                        )
+                    else:
+                        pipe.set(
+                            missing_key,
+                            self.vault.seal("{}", missing_aad),
+                            ex=self.MISSING_SECONDS,
+                        )
+                pipe.execute()
+        except RedisError:
+            pass
