@@ -1,5 +1,5 @@
 from types import SimpleNamespace
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock
 
 from app.modules.insights import product_labels
 from app.modules.insights.product_labels import labels
@@ -63,7 +63,7 @@ def test_enrichment_is_scoped_and_does_not_mutate_metrics_or_native_ids(monkeypa
     monkeypatch.setattr(product_labels, "retained", retained)
     source = [{"nm_id": "42", "orders": 3}]
     result = product_labels.enrich(
-        source, Mock(execute=Mock(return_value=[])), None, "workspace", "first", "wildberries"
+        source, MagicMock(execute=Mock(return_value=[])), None, "workspace", "first", "wildberries"
     )
     assert result[0]["title"] == "Store first" and result[0]["orders"] == 3
     assert source == [{"nm_id": "42", "orders": 3}]

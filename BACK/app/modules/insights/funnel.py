@@ -214,6 +214,8 @@ def report(
             workspace_id,
             store_id,
             "wildberries",
+            start,
+            end,
         )
         if include_labels
         else [{"nm_id": nm_id, **view(values, single)} for nm_id, values in ranked[:product_limit]],

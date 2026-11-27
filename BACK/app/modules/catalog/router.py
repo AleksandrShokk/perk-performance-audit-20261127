@@ -6,6 +6,8 @@ from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel
 from sqlalchemy import select
 
+from app.core.response_cache import SEARCH_CACHE_SECONDS, respond, wb_fingerprint
+from app.integrations.wildberries.data import Source
 from app.modules.accounts.access import allows
 from app.modules.accounts.models import Store, Workspace
 from app.modules.accounts.reporting import reporting_stores, require_reporting_store
@@ -45,19 +47,40 @@ def list_products(
         raise HTTPException(403, "Нет доступа к этому разделу.")
     visible = reporting_stores(db, workspace_id, store_id, feature="catalog")
     workspace = db.get(Workspace, workspace_id)
-    return products(
-        db,
-        request.app.state.vault,
-        workspace_id,
-        visible,
-        workspace.currency,
-        q.strip(),
-        in_stock,
-        missing_cost,
-        can_stock,
-        can_cost,
-        limit,
-        offset,
+    query = q.strip()
+
+    def build():
+        return products(
+            db,
+            request.app.state.vault,
+            workspace_id,
+            visible,
+            workspace.currency,
+            query,
+            in_stock,
+            missing_cost,
+            can_stock,
+            can_cost,
+            limit,
+            offset,
+        )
+
+    return respond(
+        request,
+        "catalog-products",
+        wb_fingerprint(db, workspace_id, visible, [Source.CATALOG, Source.STOCKS]),
+        {
+            "currency": workspace.currency,
+            "q": query,
+            "in_stock": in_stock,
+            "missing_cost": missing_cost,
+            "can_stock": can_stock,
+            "can_cost": can_cost,
+            "limit": limit,
+            "offset": offset,
+        },
+        build,
+        SEARCH_CACHE_SECONDS if query else None,
     )
 
 

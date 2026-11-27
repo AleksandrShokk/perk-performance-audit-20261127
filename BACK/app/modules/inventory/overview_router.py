@@ -3,6 +3,8 @@ from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query, Request
 
+from app.core.response_cache import SEARCH_CACHE_SECONDS, respond, wb_fingerprint
+from app.integrations.wildberries.data import Source
 from app.modules.accounts.access import allows
 from app.modules.accounts.models import Workspace
 from app.modules.accounts.reporting import reporting_stores
@@ -12,6 +14,15 @@ from app.modules.inventory.overview import overview
 from app.modules.inventory.overview_schemas import CoverageChannel, InventoryOverview
 
 router = APIRouter(prefix="/workspaces/{workspace_id}", tags=["Inventory"])
+INVENTORY_SOURCES = [
+    Source.CATALOG,
+    Source.STOCKS,
+    Source.FBS,
+    Source.PRICES,
+    Source.SUPPLY_DEMAND,
+    Source.SUPPLY_DEMAND_FBS,
+    Source.STOCK_HISTORY,
+]
 
 
 @router.get(
@@ -34,16 +45,38 @@ def inventory_overview(
         raise HTTPException(403, "Нет доступа к остаткам.")
     stores = reporting_stores(db, workspace_id, store_id, feature="inventory")
     workspace = db.get(Workspace, workspace_id)
-    return overview(
-        db,
-        request.app.state.vault,
-        workspace_id,
-        stores,
-        workspace.currency,
-        allows(member, "profit.read"),
-        q.strip(),
-        in_stock,
-        limit,
-        offset,
-        coverage_channel,
+    can_cost, query = allows(member, "profit.read"), q.strip()
+
+    def build():
+        return overview(
+            db,
+            request.app.state.vault,
+            workspace_id,
+            stores,
+            workspace.currency,
+            can_cost,
+            query,
+            in_stock,
+            limit,
+            offset,
+            coverage_channel,
+        )
+
+    # The full stock model decrypts and assembles every SKU (~1.3 s); every parameter
+    # combination is cached until one of its inputs changes.
+    return respond(
+        request,
+        "inventory-overview",
+        wb_fingerprint(db, workspace_id, stores, INVENTORY_SOURCES),
+        {
+            "currency": workspace.currency,
+            "can_cost": can_cost,
+            "q": query,
+            "in_stock": in_stock,
+            "limit": limit,
+            "offset": offset,
+            "channel": str(coverage_channel),
+        },
+        build,
+        SEARCH_CACHE_SECONDS if query else None,
     )

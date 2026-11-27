@@ -771,6 +771,8 @@ def funnel_report(
             workspace_id,
             store_id,
             "wildberries",
+            start,
+            end,
         ),
     }
     return {
