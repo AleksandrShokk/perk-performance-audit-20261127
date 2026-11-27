@@ -1,0 +1,9 @@
+[Unit]
+Description=PERK database and encryption-key backup
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/perk/deploy/backup.sh
+UMask=0077

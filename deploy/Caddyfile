@@ -1,0 +1,27 @@
+{$PERK_DOMAIN} {
+    encode zstd gzip
+    header {
+        Strict-Transport-Security "max-age=31536000"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        -Server
+    }
+    handle /api/v1/* {
+        # Keep proxy traffic on ingress, where forwarded headers are trusted.
+        reverse_proxy 10.93.0.11:8000 {
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-Proto https
+        }
+    }
+    handle {
+        reverse_proxy web:3000 {
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto https
+        }
+    }
+}
+
+www.{$PERK_DOMAIN} {
+    redir https://{$PERK_DOMAIN}{uri} permanent
+}

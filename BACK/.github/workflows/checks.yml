@@ -1,0 +1,62 @@
+name: Backend checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # New advisories appear without code changes.
+    - cron: "17 4 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      COMPOSE_PROJECT_NAME: perk-ci
+      APP_ENV: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Create isolated test secrets
+        run: |
+          python3 -m scripts.init_security
+          # The private parent stays 0700. Bind-mounted secrets must be readable by
+          # different container UIDs on Linux. All values are disposable CI secrets.
+          chmod 700 .secrets
+          chmod 444 .secrets/*
+      - name: Build test and migration images
+        run: docker compose --profile tools build api tests
+      - name: Check Python style
+        run: |
+          docker run --rm --network none --read-only --tmpfs /tmp:size=128m,mode=1777 --mount type=bind,source="$PWD",target=/source,readonly --workdir /source perk-backend:test ruff check --no-cache .
+          docker run --rm --network none --read-only --tmpfs /tmp:size=128m,mode=1777 --mount type=bind,source="$PWD",target=/source,readonly --workdir /source perk-backend:test ruff format --check --no-cache .
+      - name: Apply migrations to isolated database
+        run: docker compose run --rm migrate
+      - name: Check migration completeness
+        run: docker compose run --rm migrate alembic check
+      - name: Run unit and database tests
+        run: docker compose --profile tools run --rm tests pytest -q -p no:cacheprovider
+      - name: Security static checks
+        run: docker run --rm --network none --read-only --tmpfs /tmp:size=128m,mode=1777 perk-backend:test bandit -q -r app scripts
+      - name: Dependency vulnerability audit
+        # Needs network access to the advisory database; runs against the installed image.
+        run: docker run --rm --read-only --tmpfs /tmp:size=128m,mode=1777 -e XDG_CACHE_HOME=/tmp perk-backend:test pip-audit --local --progress-spinner off
+      - name: Verify committed OpenAPI
+        run: |
+          # Export as runner UID into its checkout, with no network or real secrets.
+          docker run --rm --network none --read-only --tmpfs /tmp:size=128m,mode=1777 --user "$(id -u):$(id -g)" --mount type=bind,source="$PWD/docs",target=/app/docs perk-backend:test python -m scripts.export_openapi
+          git diff --exit-code -- docs/openapi.json
+      - name: Clean isolated infrastructure
+        if: always()
+        run: docker compose --profile tools down --volumes --remove-orphans

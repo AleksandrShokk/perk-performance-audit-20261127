@@ -1,0 +1,35 @@
+# Explicit opt-in. Normal compose.yaml does not start or expose this service.
+services:
+  console:
+    image: perk-backend:dev
+    build: {context: ., target: runtime}
+    command: [python, -m, uvicorn, 'app.devconsole.server:create_console', --factory, --host, 0.0.0.0, --port, '8010', --no-access-log, --no-proxy-headers, --limit-concurrency, '32']
+    init: true
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ['/tmp:size=64m,mode=1777']
+    pids_limit: 100
+    mem_limit: 512m
+    environment:
+      APP_ENV: ${APP_ENV:-local}
+      DEV_CONSOLE_ENABLED: 'true'
+      DEV_GRANT_FILE: /run/dev-console/grant.json
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-perk}
+      POSTGRES_USER: perk_app
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_app_password
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD_FILE: /run/secrets/redis_password
+      SECURITY_FILE: /run/secrets/security_config
+    secrets: [db_app_password, redis_password, security_config]
+    volumes: ['./.secrets/dev-console:/run/dev-console:ro']
+    # The isolated data network has no path to a published host port on Docker Desktop.
+    # The second network restores localhost publishing; ports remain bound to 127.0.0.1.
+    networks: [data, egress]
+    ports: ['127.0.0.1:8010:8010']
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}

@@ -1,0 +1,7 @@
+# Opt-in access from a phone in the same Wi-Fi network, for development only.
+#   docker compose -f compose.yaml -f compose.lan.yaml up -d
+# Set API_LAN_HOST in .env to this computer's LAN address (e.g. 192.168.10.12).
+# Traffic is plain HTTP: use test accounts only, never real passwords or store tokens.
+services:
+  api:
+    ports: ["${API_LAN_HOST:?Set API_LAN_HOST to this computer's LAN IP}:${API_PORT:-8000}:8000"]

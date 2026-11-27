@@ -1,0 +1,13 @@
+.git
+**/node_modules
+**/.next
+**/.expo
+**/.env
+**/.env.*
+**/.secrets
+**/.ruff_cache
+**/dist
+**/test-results
+**/playwright-report
+**/*.log
+**/*.tsbuildinfo

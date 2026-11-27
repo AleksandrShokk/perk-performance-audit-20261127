@@ -1,0 +1,46 @@
+{
+  "colors": {
+    "light": {
+      "background": {
+        "screen": "#F7F7FB",
+        "card": "#FFFFFF"
+      },
+      "text": {
+        "primary": "#242436",
+        "secondary": "#6B6B80"
+      },
+      "border": "#E5E5F0",
+      "accent": "#625DD5"
+    },
+    "dark": {
+      "background": {
+        "screen": "#16161E",
+        "card": "#22222E"
+      },
+      "text": {
+        "primary": "#F4F4F8",
+        "secondary": "#A8A8BC"
+      },
+      "border": "#363647",
+      "accent": "#A5A0FF"
+    }
+  },
+  "textSize": {
+    "caption": 12,
+    "body": 16,
+    "sectionTitle": 18,
+    "screenTitle": 30,
+    "mainValue": 36
+  },
+  "spacing": {
+    "betweenItems": 8,
+    "betweenCards": 16,
+    "betweenSections": 24,
+    "screenPadding": 20,
+    "cardPadding": 20
+  },
+  "cornerRadius": {
+    "card": 24,
+    "button": 14
+  }
+}

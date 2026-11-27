@@ -1,0 +1,24 @@
+# Optional localhost database access for Python development, never for a public server.
+services:
+  postgres:
+    ports: ["127.0.0.1:${POSTGRES_PORT:-5434}:5432"]
+  redis:
+    ports: ["127.0.0.1:${REDIS_PORT:-6381}:6379"]
+
+  # Local inbox: emails with codes never leave the computer. Open http://127.0.0.1:8025
+  mailpit:
+    image: axllent/mailpit:latest
+    networks: [data, mail_ui]
+    ports: ["127.0.0.1:8025:8025"]
+  api:
+    environment:
+      TEAM_INVITE_URL: http://localhost:3000/invite
+      EMAIL_PROVIDER: smtp
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      SMTP_SECURITY: none
+    depends_on:
+      mailpit: {condition: service_started}
+
+networks:
+  mail_ui: {}

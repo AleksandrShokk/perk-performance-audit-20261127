@@ -1,0 +1,171 @@
+{
+  "captured_at_utc": "2026-11-27T14:18:11.009024+00:00",
+  "containers": [
+    {
+      "service": "perk-production-web-1",
+      "image": "perk-web:production",
+      "image_id": "sha256:ddb6c1c65feb40ec5c21fc28911971b59216fef91b1eb6dc5837be5b22596806",
+      "command": "docker-entrypoint.sh node apps/web/server.js",
+      "memory_limit_bytes": 671088640,
+      "cpus_nano": 0,
+      "started_at": "2026-11-24T09:29:25.263043223Z"
+    },
+    {
+      "service": "perk-production-api-1",
+      "image": "perk-backend:dev",
+      "image_id": "sha256:139d35077fcd4ebfdffe507f7c77dc8f0bd861cbccca7f1132e220caa534b6fb",
+      "command": "python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --no-access-log --proxy-headers --limit-concurrency 64 --timeout-keep-alive 5",
+      "memory_limit_bytes": 805306368,
+      "cpus_nano": 0,
+      "started_at": "2026-11-24T09:17:25.384055068Z"
+    },
+    {
+      "service": "perk-production-worker-heavy-1",
+      "image": "perk-backend:dev",
+      "image_id": "sha256:139d35077fcd4ebfdffe507f7c77dc8f0bd861cbccca7f1132e220caa534b6fb",
+      "command": "celery -A app.workers.celery_app:celery_app worker -Q perk-heavy -n heavy@%h --loglevel=INFO --concurrency=1",
+      "memory_limit_bytes": 1342177280,
+      "cpus_nano": 0,
+      "started_at": "2026-11-24T09:17:24.628358196Z"
+    },
+    {
+      "service": "perk-production-worker-ozon-1",
+      "image": "perk-backend:dev",
+      "image_id": "sha256:c654e393be3c6da925dfa231004da4f88c81c6d9179f25bcd6b26545072d0d7d",
+      "command": "celery -A app.workers.celery_app:celery_app worker -Q perk-ozon -n ozon@%h --loglevel=INFO --concurrency=2",
+      "memory_limit_bytes": 805306368,
+      "cpus_nano": 0,
+      "started_at": "2026-11-15T19:38:18.791768529Z"
+    },
+    {
+      "service": "perk-production-worker-1",
+      "image": "perk-backend:dev",
+      "image_id": "sha256:c654e393be3c6da925dfa231004da4f88c81c6d9179f25bcd6b26545072d0d7d",
+      "command": "celery -A app.workers.celery_app:celery_app worker -Q perk -n sync@%h --loglevel=INFO --concurrency=2",
+      "memory_limit_bytes": 805306368,
+      "cpus_nano": 0,
+      "started_at": "2026-11-15T19:38:20.731288613Z"
+    },
+    {
+      "service": "perk-production-beat-1",
+      "image": "perk-backend:dev",
+      "image_id": "sha256:c654e393be3c6da925dfa231004da4f88c81c6d9179f25bcd6b26545072d0d7d",
+      "command": "celery -A app.workers.celery_app:celery_app beat --loglevel=INFO --schedule=/tmp/celerybeat-schedule",
+      "memory_limit_bytes": 268435456,
+      "cpus_nano": 0,
+      "started_at": "2026-11-15T19:38:20.221134606Z"
+    },
+    {
+      "service": "perk-production-proxy-1",
+      "image": "caddy:2-alpine",
+      "image_id": "sha256:78bd35025c7ba85961dd149ae670315129954e77abe2383ac47c89106b35ade9",
+      "command": "caddy run --config /etc/caddy/Caddyfile --adapter caddyfile",
+      "memory_limit_bytes": 134217728,
+      "cpus_nano": 0,
+      "started_at": "2026-11-11T12:06:08.353427756Z"
+    },
+    {
+      "service": "perk-production-postgres-1",
+      "image": "postgres:17-alpine",
+      "image_id": "sha256:3540c0362c809df084ffac0ae69fe794515f9de92692f02178bcdce0ef0302ac",
+      "command": "docker-entrypoint.sh postgres -c shared_buffers=512MB -c work_mem=8MB -c maintenance_work_mem=128MB -c max_connections=80 -c timezone=UTC",
+      "memory_limit_bytes": 2147483648,
+      "cpus_nano": 0,
+      "started_at": "2026-11-11T10:52:27.571912388Z"
+    },
+    {
+      "service": "perk-production-redis-1",
+      "image": "redis:7.4-alpine",
+      "image_id": "sha256:7b1753b4c5ad8458906c272a8132b8c15f5557b000379eb115fb239706a384b7",
+      "command": "docker-entrypoint.sh redis-server /run/secrets/redis_config",
+      "memory_limit_bytes": 268435456,
+      "cpus_nano": 0,
+      "started_at": "2026-11-11T10:52:27.382622221Z"
+    }
+  ],
+  "backend_image_versions": [
+    {
+      "service": "perk-production-api-1",
+      "image_id": "sha256:139d35077fcd4ebfdffe507f7c77dc8f0bd861cbccca7f1132e220caa534b6fb",
+      "started_at": "2026-11-24T09:17:25.384055068Z",
+      "source_directory": "runtime/backend-images/139d35077fcd/app"
+    },
+    {
+      "service": "perk-production-worker-heavy-1",
+      "image_id": "sha256:139d35077fcd4ebfdffe507f7c77dc8f0bd861cbccca7f1132e220caa534b6fb",
+      "started_at": "2026-11-24T09:17:24.628358196Z",
+      "source_directory": "runtime/backend-images/139d35077fcd/app"
+    },
+    {
+      "service": "perk-production-worker-ozon-1",
+      "image_id": "sha256:c654e393be3c6da925dfa231004da4f88c81c6d9179f25bcd6b26545072d0d7d",
+      "started_at": "2026-11-15T19:38:18.791768529Z",
+      "source_directory": "runtime/backend-images/c654e393be3c/app"
+    },
+    {
+      "service": "perk-production-worker-1",
+      "image_id": "sha256:c654e393be3c6da925dfa231004da4f88c81c6d9179f25bcd6b26545072d0d7d",
+      "started_at": "2026-11-15T19:38:20.731288613Z",
+      "source_directory": "runtime/backend-images/c654e393be3c/app"
+    },
+    {
+      "service": "perk-production-beat-1",
+      "image_id": "sha256:c654e393be3c6da925dfa231004da4f88c81c6d9179f25bcd6b26545072d0d7d",
+      "started_at": "2026-11-15T19:38:20.221134606Z",
+      "source_directory": "runtime/backend-images/c654e393be3c/app"
+    }
+  ],
+  "systemd_timers": "NEXT                            LEFT LAST                              PASSED UNIT                         ACTIVATES\nFri 2026-11-27 23:47:56 MSK       6h Fri 2026-11-27 09:08:51 MSK       8h ago apt-daily.timer              apt-daily.service\nSat 2026-11-28 00:00:00 MSK       6h Fri 2026-11-27 00:00:05 MSK      17h ago dpkg-db-backup.timer         dpkg-db-backup.service\nSat 2026-11-28 00:00:00 MSK       6h Fri 2026-11-27 00:00:05 MSK      17h ago logrotate.timer              logrotate.service\nSat 2026-11-28 06:03:06 MSK      12h Fri 2026-11-27 06:00:21 MSK      11h ago perk-backup.timer            perk-backup.service\nSat 2026-11-28 06:57:26 MSK      13h Fri 2026-11-27 06:10:01 MSK      11h ago apt-daily-upgrade.timer      apt-daily-upgrade.service\nSat 2026-11-28 08:52:49 MSK      15h Fri 2026-11-27 06:24:41 MSK      10h ago man-db.timer                 man-db.service\nSat 2026-11-28 10:16:29 MSK      16h Fri 2026-11-27 13:02:06 MSK 4h 16min ago motd-news.timer              motd-news.service\nSat 2026-11-28 13:43:31 MSK      20h Fri 2026-11-27 13:43:31 MSK 3h 34min ago systemd-tmpfiles-clean.timer systemd-tmpfiles-clean.service\nSun 2026-11-29 03:10:32 MSK 1 day 9h Sun 2026-11-22 03:10:11 MSK   5 days ago e2scrub_all.timer            e2scrub_all.service\nMon 2026-11-30 00:15:00 MSK   2 days Mon 2026-11-23 00:15:13 MSK   4 days ago systemd-cron-cleaner.timer   systemd-cron-cleaner.service\nMon 2026-11-30 00:58:50 MSK   2 days Mon 2026-11-23 00:07:41 MSK   4 days ago fstrim.timer                 fstrim.service\n\n11 timers listed.\n",
+  "cron_jobs": [],
+  "caddyfile": "{$PERK_DOMAIN} {\n    encode zstd gzip\n    header {\n        Strict-Transport-Security \"max-age=31536000\"\n        X-Content-Type-Options \"nosniff\"\n        Referrer-Policy \"strict-origin-when-cross-origin\"\n        -Server\n    }\n    handle /api/v1/* {\n        # Keep proxy traffic on ingress, where forwarded headers are trusted.\n        reverse_proxy 10.93.0.11:8000 {\n            header_up X-Forwarded-For {remote_host}\n            header_up X-Real-IP {remote_host}\n            header_up X-Forwarded-Proto https\n        }\n    }\n    handle {\n        reverse_proxy web:3000 {\n            header_up X-Forwarded-For {remote_host}\n            header_up X-Forwarded-Proto https\n        }\n    }\n}\n\nwww.{$PERK_DOMAIN} {\n    redir https://{$PERK_DOMAIN}{uri} permanent\n}\n",
+  "host_resources": {
+    "cpu": "4",
+    "memory": "total        used        free      shared  buff/cache   available\nMem:            7838        3288         399         549        4997        4549\nSwap:           3918          50        3868",
+    "disk": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/vda3        79G   25G   50G  34% /",
+    "load": "17:18:11 up 16 days,  3:55,  2 users,  load average: 0.20, 0.24, 0.31"
+  },
+  "celery_beat_schedule": {
+    "dispatch-supply-destinations": {
+      "task": "perk.supply.destinations.dispatch",
+      "schedule": 5.0
+    },
+    "dispatch-ozon-analytics": {
+      "task": "perk.ozon.analytics.dispatch",
+      "schedule": 5.0
+    },
+    "dispatch-ozon-catalog": {
+      "task": "perk.ozon.catalog.dispatch",
+      "schedule": 5.0
+    },
+    "dispatch-wb-sync": {
+      "task": "perk.sync.dispatch",
+      "schedule": 2.0
+    },
+    "schedule-wb-sync": {
+      "task": "perk.sync.schedule",
+      "schedule": 5.0
+    },
+    "warm-wb-analytics": {
+      "task": "perk.analytics.warm",
+      "schedule": 300.0
+    },
+    "warm-insights": {
+      "task": "perk.insights.warm",
+      "schedule": 900.0
+    },
+    "maintenance-cleanup": {
+      "task": "perk.maintenance.cleanup",
+      "schedule": 21600.0
+    },
+    "notifications-dispatch": {
+      "task": "perk.notifications.dispatch",
+      "schedule": 300.0
+    }
+  },
+  "uvicorn_processes": 1,
+  "WEB_CONCURRENCY": 1,
+  "safe_interval_settings": {
+    "access_ttl_seconds": 900,
+    "api_limit_per_minute": 120
+  }
+}

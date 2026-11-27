@@ -1,0 +1,364 @@
+.analytics-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 310px;
+  gap: 22px;
+  margin-bottom: 22px;
+  align-items: stretch;
+}
+.analytics-overview .sales-card {
+  margin: 0;
+}
+.analytics-overview .chart-container {
+  min-height: 250px;
+  height: 290px;
+}
+.analytics-funnel {
+  padding: 24px;
+}
+.analytics-funnel h2 {
+  font-size: 15px;
+  font-weight: 600;
+}
+.funnel-stages {
+  display: grid;
+  gap: 28px;
+  margin: 30px 0;
+}
+.funnel-stage > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+.funnel-stage > div > span {
+  color: var(--muted-foreground);
+}
+.funnel-stage strong {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.funnel-stage-track {
+  height: 8px;
+  border-radius: 5px;
+  background: var(--secondary);
+  overflow: hidden;
+}
+.funnel-stage-track span {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+  border-radius: 5px;
+}
+.funnel-stage:nth-child(2) .funnel-stage-track span {
+  opacity: 0.85;
+}
+.funnel-stage:nth-child(3) .funnel-stage-track span {
+  opacity: 0.7;
+}
+.funnel-stage:nth-child(4) .funnel-stage-track span {
+  opacity: 0.55;
+}
+.funnel-conversions {
+  display: grid;
+  gap: 15px;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+.funnel-conversions > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+}
+.funnel-conversions span {
+  color: var(--muted-foreground);
+}
+.funnel-conversions strong {
+  font-size: 16px;
+  font-weight: 500;
+}
+.analytics-products {
+  padding: 0;
+  overflow: hidden;
+}
+.analytics-products > .section-heading {
+  padding: 20px 22px;
+  margin: 0;
+}
+.analytics-products h2 {
+  font-size: 15px;
+  font-weight: 600;
+}
+.analytics-table-toolbar {
+  padding: 0 22px;
+  margin-bottom: 16px;
+}
+.analytics-table-scroll {
+  max-height: 600px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.analytics-data {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: left;
+  font-size: 12px;
+}
+.analytics-data th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 12px 18px;
+  background: var(--card);
+  font-size: 11px;
+  color: var(--muted-foreground);
+  border-bottom: 1px solid var(--border);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.analytics-data th button {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  cursor: pointer;
+}
+.analytics-data th[aria-sort='descending'],
+.analytics-data th[aria-sort='ascending'] {
+  color: var(--primary);
+}
+.analytics-data td {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.analytics-data tr:last-child td {
+  border: 0;
+}
+.analytics-data tbody tr:hover {
+  background: color-mix(in srgb, var(--secondary) 45%, transparent);
+}
+.analytics-data td:first-child {
+  width: 33%;
+}
+.analytics-data th:nth-child(n + 3),
+.analytics-data td:nth-child(n + 3) {
+  text-align: right;
+}
+.analytics-data .product-label strong {
+  font-size: 12px;
+  font-weight: 500;
+  max-width: 330px;
+}
+.analytics-data small {
+  display: block;
+  color: var(--muted-foreground);
+  font-size: 11px;
+  margin-top: 5px;
+}
+.analytics-data strong {
+  font-weight: 500;
+}
+.analytics-product-button {
+  text-align: left;
+  cursor: pointer;
+}
+.analytics-product-button:hover .product-label strong {
+  color: var(--primary);
+}
+.analytics-numeric {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.analytics-mobile-store {
+  display: none !important;
+}
+.analytics-details-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.3fr);
+  gap: 26px;
+}
+.analytics-detail-content {
+  min-width: 0;
+}
+.analytics-detail-table {
+  overflow: auto;
+  margin-top: 20px;
+}
+.analytics-detail-table table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 12px;
+}
+.analytics-detail-table th {
+  color: var(--muted-foreground);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 12px 6px;
+  white-space: nowrap;
+}
+.analytics-detail-table td {
+  border-bottom: 1px solid var(--border);
+  padding: 14px 6px;
+}
+.analytics-detail-table td:not(:first-child),
+.analytics-detail-table th:not(:first-child) {
+  text-align: right;
+}
+.analytics-detail-table strong {
+  font-weight: 500;
+  white-space: nowrap;
+}
+.analytics-detail-table small {
+  display: block;
+  color: var(--muted-foreground);
+  margin-top: 5px;
+  white-space: nowrap;
+}
+@media (max-width: 1150px) {
+  .analytics-overview {
+    grid-template-columns: minmax(0, 1fr) 270px;
+    gap: 16px;
+  }
+  .analytics-funnel {
+    padding: 20px;
+  }
+  .analytics-overview .sales-metric strong {
+    font-size: 22px;
+  }
+  .analytics-data td,
+  .analytics-data th {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+@media (max-width: 950px) {
+  .analytics-overview {
+    grid-template-columns: 1fr;
+  }
+  .analytics-funnel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 200px;
+    column-gap: 30px;
+  }
+  .analytics-funnel > .section-heading {
+    grid-column: 1/-1;
+  }
+  .funnel-stages {
+    gap: 16px;
+    margin: 16px 0 0;
+  }
+  .funnel-conversions {
+    border: 0;
+    border-left: 1px solid var(--border);
+    padding: 0 0 0 24px;
+    margin-top: 16px;
+    align-content: center;
+    gap: 22px;
+  }
+  .analytics-store {
+    display: none;
+  }
+  .analytics-mobile-store {
+    display: block !important;
+    padding-left: 50px;
+  }
+  .analytics-data {
+    min-width: 740px;
+  }
+  .analytics-details-grid {
+    grid-template-columns: 1fr;
+  }
+  .analytics-details-grid .product-gallery {
+    max-width: 300px;
+    width: 100%;
+    margin: auto;
+  }
+}
+@media (max-width: 560px) {
+  .analytics-overview .chart-container {
+    height: 250px;
+  }
+  .analytics-funnel {
+    display: block;
+    padding: 18px;
+  }
+  .funnel-conversions {
+    border-left: 0;
+    border-top: 1px solid var(--border);
+    padding: 16px 0 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .funnel-conversions > div {
+    display: block;
+  }
+  .funnel-conversions strong {
+    display: block;
+    margin-top: 6px;
+  }
+  .analytics-products > .section-heading {
+    padding: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .analytics-table-toolbar {
+    padding: 0 16px;
+    gap: 10px;
+  }
+  .analytics-table-toolbar .catalog-search {
+    width: 100%;
+  }
+  .analytics-table-toolbar .native-select {
+    min-width: 140px;
+    flex: 1;
+    max-width: 100%;
+    margin: 0;
+  }
+  .analytics-data td,
+  .analytics-data th {
+    padding: 12px 10px;
+  }
+  .analytics-data {
+    min-width: 680px;
+  }
+  .analytics-data td:first-child {
+    min-width: 190px;
+  }
+}
+
+.analytics-products[data-slot='tabs'] {
+  display: block;
+}
+.analytics-products > .section-heading [data-slot='tabs-list'] {
+  height: 36px;
+  gap: 4px;
+  padding: 4px;
+}
+.analytics-products [data-slot='tabs-trigger'] {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+@media (max-width: 560px) {
+  .analytics-overview .sales-totals {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .analytics-overview .sales-metric:first-child {
+    grid-column: 1/-1;
+  }
+  .analytics-overview .sales-metric strong {
+    font-size: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .analytics-overview .sales-metric:first-child strong {
+    font-size: 24px;
+  }
+}

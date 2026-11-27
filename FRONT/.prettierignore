@@ -1,0 +1,9 @@
+node_modules
+dist
+.expo
+.next
+android
+ios
+pnpm-lock.yaml
+packages/api/src/generated
+packages/api/openapi.json

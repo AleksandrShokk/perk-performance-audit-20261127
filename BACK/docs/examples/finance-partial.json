@@ -1,0 +1,185 @@
+{
+  "date_from": "2026-10-01",
+  "date_to": "2026-10-03",
+  "currency": "RUB",
+  "status": "ready",
+  "is_partial": true,
+  "updated_at": "2026-10-13T12:00:00Z",
+  "date_basis": "report_date",
+  "return_cost_policy": "original_sale_assuming_resalable",
+  "expense_allocation": "store_only",
+  "is_preliminary": true,
+  "period_covered": false,
+  "summary": {
+    "records": 1,
+    "sales": 1,
+    "returns": 0,
+    "net_units": 1,
+    "revenue": "200",
+    "for_pay": "160",
+    "wb_expenses": {
+      "delivery_service": "20",
+      "paid_storage": "0",
+      "paid_acceptance": "0",
+      "penalty": "0",
+      "deduction": "0"
+    },
+    "included_components": {
+      "sales_commission": "30",
+      "acquiring_fee": "10",
+      "wb_remuneration": "0",
+      "wb_remuneration_vat": "0",
+      "pickup_reward": "0",
+      "rebill_logistic_cost": "0"
+    },
+    "unreconciled_components": {
+      "additional_payment": "0",
+      "cashback_amount": "0",
+      "cashback_commission_change": "0",
+      "installment_cofinancing_amount": "0"
+    },
+    "settlement_estimate": null,
+    "cogs": null,
+    "contribution_before_external_expenses": null,
+    "external_expenses": "0",
+    "profit_before_tax": null,
+    "margin_percent": null,
+    "issues": {
+      "incomplete_period": 1,
+      "import_in_progress": 1,
+      "costs_pending": 1
+    },
+    "calculation_complete": false
+  },
+  "unassigned": {
+    "records": 0,
+    "sales": 0,
+    "returns": 0,
+    "net_units": 0,
+    "revenue": null,
+    "for_pay": null,
+    "wb_expenses": {
+      "delivery_service": null,
+      "paid_storage": null,
+      "paid_acceptance": null,
+      "penalty": null,
+      "deduction": null
+    },
+    "included_components": {
+      "sales_commission": null,
+      "acquiring_fee": null,
+      "wb_remuneration": null,
+      "wb_remuneration_vat": null,
+      "pickup_reward": null,
+      "rebill_logistic_cost": null
+    },
+    "unreconciled_components": {
+      "additional_payment": null,
+      "cashback_amount": null,
+      "cashback_commission_change": null,
+      "installment_cofinancing_amount": null
+    },
+    "settlement_estimate": null,
+    "cogs": null,
+    "contribution_before_external_expenses": null,
+    "external_expenses": "0",
+    "profit_before_tax": null,
+    "margin_percent": null,
+    "issues": {
+      "incomplete_period": 1,
+      "import_in_progress": 1
+    },
+    "calculation_complete": false
+  },
+  "daily": [
+    {
+      "records": 1,
+      "sales": 1,
+      "returns": 0,
+      "net_units": 1,
+      "revenue": "200",
+      "for_pay": "160",
+      "wb_expenses": {
+        "delivery_service": "20",
+        "paid_storage": "0",
+        "paid_acceptance": "0",
+        "penalty": "0",
+        "deduction": "0"
+      },
+      "included_components": {
+        "sales_commission": "30",
+        "acquiring_fee": "10",
+        "wb_remuneration": "0",
+        "wb_remuneration_vat": "0",
+        "pickup_reward": "0",
+        "rebill_logistic_cost": "0"
+      },
+      "unreconciled_components": {
+        "additional_payment": "0",
+        "cashback_amount": "0",
+        "cashback_commission_change": "0",
+        "installment_cofinancing_amount": "0"
+      },
+      "settlement_estimate": null,
+      "cogs": null,
+      "contribution_before_external_expenses": null,
+      "external_expenses": "0",
+      "profit_before_tax": null,
+      "margin_percent": null,
+      "issues": {
+        "incomplete_period": 1,
+        "import_in_progress": 1,
+        "costs_pending": 1
+      },
+      "calculation_complete": false,
+      "day": "2026-10-01"
+    }
+  ],
+  "products": [
+    {
+      "records": 1,
+      "sales": 1,
+      "returns": 0,
+      "net_units": 1,
+      "revenue": "200",
+      "for_pay": "160",
+      "wb_expenses": {
+        "delivery_service": "20",
+        "paid_storage": "0",
+        "paid_acceptance": "0",
+        "penalty": "0",
+        "deduction": "0"
+      },
+      "included_components": {
+        "sales_commission": "30",
+        "acquiring_fee": "10",
+        "wb_remuneration": "0",
+        "wb_remuneration_vat": "0",
+        "pickup_reward": "0",
+        "rebill_logistic_cost": "0"
+      },
+      "unreconciled_components": {
+        "additional_payment": "0",
+        "cashback_amount": "0",
+        "cashback_commission_change": "0",
+        "installment_cofinancing_amount": "0"
+      },
+      "settlement_estimate": null,
+      "cogs": null,
+      "contribution_before_external_expenses": null,
+      "external_expenses": "0",
+      "profit_before_tax": null,
+      "margin_percent": null,
+      "issues": {
+        "incomplete_period": 1,
+        "import_in_progress": 1,
+        "costs_pending": 1
+      },
+      "calculation_complete": false,
+      "nm_id": "42"
+    }
+  ],
+  "product_count": 1,
+  "limit": 100,
+  "offset": 0
+}

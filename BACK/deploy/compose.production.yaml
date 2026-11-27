@@ -1,0 +1,117 @@
+# Run with compose.yaml from BACK; private runtime ports are removed explicitly.
+x-production-env: &production-env
+  PUBLIC_REGISTRATION_ENABLED: ${PUBLIC_REGISTRATION_ENABLED:-false}
+  REGISTRATION_OPEN_UNTIL: ${REGISTRATION_OPEN_UNTIL:-}
+  REGISTRATION_ALLOWED_EMAILS: ${REGISTRATION_ALLOWED_EMAILS:-[]}
+  SMTP_USERNAME: ${SMTP_USERNAME:-}
+  SMTP_PASSWORD_FILE: /run/secrets/smtp_password
+  TELEGRAM_GATEWAY_TOKEN_FILE: /run/secrets/telegram_gateway_token
+
+x-service: &service
+  restart: unless-stopped
+
+services:
+  postgres:
+    <<: *service
+    mem_limit: 2g
+    shm_size: 512m
+    command: [postgres, -c, shared_buffers=512MB, -c, work_mem=8MB, -c, maintenance_work_mem=128MB, -c, max_connections=80, -c, timezone=UTC]
+  redis:
+    <<: *service
+    mem_limit: 256m
+  api:
+    <<: *service
+    mem_limit: 768m
+    environment: *production-env
+    ports: !reset []
+    secrets: [smtp_password, telegram_gateway_token]
+    networks:
+      ingress: {ipv4_address: 10.93.0.11}
+  migrate:
+    environment: *production-env
+    secrets: [smtp_password, telegram_gateway_token]
+  worker:
+    <<: *service
+    mem_limit: 768m
+    environment: *production-env
+    secrets: [smtp_password, telegram_gateway_token]
+  worker-ozon:
+    <<: *service
+    mem_limit: 768m
+    environment: *production-env
+    secrets: [smtp_password, telegram_gateway_token]
+  worker-heavy:
+    <<: *service
+    mem_limit: 1280m
+    environment: *production-env
+    secrets: [smtp_password, telegram_gateway_token]
+  beat:
+    <<: *service
+    mem_limit: 256m
+  web:
+    <<: *service
+    image: perk-web:production
+    build:
+      context: ../FRONT
+      dockerfile: Dockerfile.web
+    init: true
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+      - /app/apps/web/.next/cache:size=64m,uid=1000,gid=1000,mode=0700
+    mem_limit: 640m
+    pids_limit: 100
+    networks:
+      ingress: {ipv4_address: 10.93.0.10}
+    environment:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3000/login').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 20s
+      timeout: 8s
+      start_period: 20s
+      retries: 3
+  proxy:
+    <<: *service
+    image: caddy:2-alpine
+    profiles: [public]
+    mem_limit: 128m
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    security_opt: [no-new-privileges:true]
+    environment:
+      PERK_DOMAIN: ${PERK_DOMAIN:?Set PERK_DOMAIN}
+    ports: ["80:80", "443:443"]
+    networks:
+      ingress: {ipv4_address: 10.93.0.2}
+      egress: {}
+    volumes:
+      - ../deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+    depends_on:
+      api: {condition: service_healthy}
+      web: {condition: service_healthy}
+
+networks:
+  ingress:
+    internal: true
+    ipam:
+      config: [{subnet: 10.93.0.0/24}]
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+secrets:
+  smtp_password: {file: .secrets/smtp-password}
+  telegram_gateway_token: {file: .secrets/telegram-gateway-token}

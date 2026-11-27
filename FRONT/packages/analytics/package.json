@@ -1,0 +1,22 @@
+{
+  "name": "@app/analytics",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./dates": "./src/dates.ts",
+    "./format": "./src/format.ts",
+    "./periods": "./src/periods.ts",
+    "./funnel": "./src/funnel.ts",
+    "./sales-types": "./src/sales-types.ts",
+    "./sales": "./src/sales.ts",
+    "./finance": "./src/finance.ts",
+    "./permissions": "./src/permissions.ts",
+    "./polling": "./src/polling.ts",
+    "./onboarding": "./src/onboarding.ts"
+  },
+  "dependencies": {
+    "@app/api": "workspace:*",
+    "date-fns": "^4.4.0",
+    "decimal.js": "^10.6.0"
+  }
+}

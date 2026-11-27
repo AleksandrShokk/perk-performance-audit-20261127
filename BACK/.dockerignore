@@ -1,0 +1,15 @@
+.git
+.secrets
+security-reports
+**/__pycache__
+**/*.pyc
+.env
+.env.*
+.venv
+__pycache__
+*.pyc
+.pytest_cache
+.ruff_cache
+.coverage
+htmlcov
+.idea

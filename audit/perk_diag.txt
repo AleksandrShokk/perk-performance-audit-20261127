@@ -1,0 +1,2558 @@
+PERK PERFORMANCE AUDIT — AGGREGATED DATABASE DIAGNOSTICS
+
+=== Safety and capture ===
+{
+  "captured_at_utc": "2026-11-27T14:18:07.855420+00:00",
+  "transaction_read_only": "on",
+  "database_user_data_exported": false,
+  "query_literals": "redacted; only shapes retained",
+  "table_row_estimates": "PostgreSQL estimates; no COUNT(*) of user tables performed"
+}
+
+=== PostgreSQL version ===
+PostgreSQL 17.11 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+
+=== SHOW shared_buffers ===
+512MB
+
+=== SHOW work_mem ===
+8MB
+
+=== SHOW effective_cache_size ===
+4GB
+
+=== SHOW max_connections ===
+80
+
+=== SHOW maintenance_work_mem ===
+128MB
+
+=== SHOW max_parallel_workers_per_gather ===
+2
+
+=== SHOW random_page_cost ===
+4
+
+=== SHOW effective_io_concurrency ===
+1
+
+=== SHOW shared_preload_libraries ===
+
+
+=== Top 25 expensive statements ===
+pg_stat_statements is not installed; no extension was installed or configuration changed.
+
+=== Full scans: top 25 tables ===
+[
+  {
+    "schemaname": "public",
+    "relname": "memberships",
+    "seq_scan": 8280552,
+    "idx_scan": 677842244,
+    "n_live_tup": 6,
+    "n_dead_tup": 0
+  },
+  {
+    "schemaname": "public",
+    "relname": "sync_runs",
+    "seq_scan": 2022313,
+    "idx_scan": 2880362,
+    "n_live_tup": 1031,
+    "n_dead_tup": 177
+  },
+  {
+    "schemaname": "public",
+    "relname": "ozon_analytics_sync",
+    "seq_scan": 358681,
+    "idx_scan": 1505992,
+    "n_live_tup": 5,
+    "n_dead_tup": 42
+  },
+  {
+    "schemaname": "public",
+    "relname": "ozon_catalog_sync",
+    "seq_scan": 283510,
+    "idx_scan": 414,
+    "n_live_tup": 1,
+    "n_dead_tup": 25
+  },
+  {
+    "schemaname": "public",
+    "relname": "supply_destination_sync",
+    "seq_scan": 277925,
+    "idx_scan": 1819379,
+    "n_live_tup": 0,
+    "n_dead_tup": 0
+  },
+  {
+    "schemaname": "public",
+    "relname": "stores",
+    "seq_scan": 260774,
+    "idx_scan": 3951216,
+    "n_live_tup": 2,
+    "n_dead_tup": 0
+  },
+  {
+    "schemaname": "public",
+    "relname": "sync_schedules",
+    "seq_scan": 177408,
+    "idx_scan": 2643,
+    "n_live_tup": 14,
+    "n_dead_tup": 3
+  },
+  {
+    "schemaname": "public",
+    "relname": "wb_metric_versions",
+    "seq_scan": 122669,
+    "idx_scan": 2946,
+    "n_live_tup": 1,
+    "n_dead_tup": 6
+  },
+  {
+    "schemaname": "public",
+    "relname": "inventory_snapshots",
+    "seq_scan": 36278,
+    "idx_scan": 14902,
+    "n_live_tup": 3531,
+    "n_dead_tup": 252
+  },
+  {
+    "schemaname": "public",
+    "relname": "wb_staged_records",
+    "seq_scan": 27147,
+    "idx_scan": 3541809,
+    "n_live_tup": 0,
+    "n_dead_tup": 0
+  },
+  {
+    "schemaname": "public",
+    "relname": "users",
+    "seq_scan": 19013,
+    "idx_scan": 99431430,
+    "n_live_tup": 5,
+    "n_dead_tup": 5
+  },
+  {
+    "schemaname": "public",
+    "relname": "notifications",
+    "seq_scan": 12062,
+    "idx_scan": 1316484,
+    "n_live_tup": 692,
+    "n_dead_tup": 0
+  },
+  {
+    "schemaname": "public",
+    "relname": "insight_snapshots",
+    "seq_scan": 11341,
+    "idx_scan": 71874,
+    "n_live_tup": 83,
+    "n_dead_tup": 63
+  },
+  {
+    "schemaname": "public",
+    "relname": "store_credentials",
+    "seq_scan": 3595,
+    "idx_scan": 54531,
+    "n_live_tup": 2,
+    "n_dead_tup": 0
+  },
+  {
+    "schemaname": "public",
+    "relname": "wb_daily_metrics",
+    "seq_scan": 2489,
+    "idx_scan": 1135532,
+    "n_live_tup": 94141,
+    "n_dead_tup": 18000
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_catalog_snapshots",
+    "seq_scan": 2404,
+    "idx_scan": 2275,
+    "n_live_tup": 1,
+    "n_dead_tup": 50
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_supply_snapshots",
+    "seq_scan": 1300,
+    "idx_scan": 1113,
+    "n_live_tup": 1,
+    "n_dead_tup": 50
+  },
+  {
+    "schemaname": "public",
+    "relname": "finance_days",
+    "seq_scan": 1238,
+    "idx_scan": 2858,
+    "n_live_tup": 0,
+    "n_dead_tup": 0
+  },
+  {
+    "schemaname": "public",
+    "relname": "auth_sessions",
+    "seq_scan": 1179,
+    "idx_scan": 7793,
+    "n_live_tup": 15,
+    "n_dead_tup": 30
+  },
+  {
+    "schemaname": "public",
+    "relname": "access_tokens",
+    "seq_scan": 657,
+    "idx_scan": 3522,
+    "n_live_tup": 15,
+    "n_dead_tup": 33
+  },
+  {
+    "schemaname": "public",
+    "relname": "finance_projections",
+    "seq_scan": 338,
+    "idx_scan": 96431,
+    "n_live_tup": 0,
+    "n_dead_tup": 0
+  },
+  {
+    "schemaname": "public",
+    "relname": "product_costs",
+    "seq_scan": 283,
+    "idx_scan": 88067,
+    "n_live_tup": 0,
+    "n_dead_tup": 0
+  },
+  {
+    "schemaname": "public",
+    "relname": "otp_challenges",
+    "seq_scan": 202,
+    "idx_scan": 67,
+    "n_live_tup": 8,
+    "n_dead_tup": 27
+  },
+  {
+    "schemaname": "public",
+    "relname": "notification_settings",
+    "seq_scan": 189,
+    "idx_scan": 9343,
+    "n_live_tup": 4,
+    "n_dead_tup": 0
+  },
+  {
+    "schemaname": "public",
+    "relname": "wb_records",
+    "seq_scan": 180,
+    "idx_scan": 4348612,
+    "n_live_tup": 110261,
+    "n_dead_tup": 1316
+  }
+]
+
+=== Table sizes: top 25 ===
+[
+  {
+    "schemaname": "public",
+    "relname": "marketplace_finance_days",
+    "total": "106 MB",
+    "table_only": "88 kB",
+    "total_bytes": 111288320
+  },
+  {
+    "schemaname": "public",
+    "relname": "wb_records",
+    "total": "81 MB",
+    "table_only": "64 MB",
+    "total_bytes": 85286912
+  },
+  {
+    "schemaname": "public",
+    "relname": "wb_daily_metrics",
+    "total": "80 MB",
+    "table_only": "60 MB",
+    "total_bytes": 84148224
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_sales_days",
+    "total": "53 MB",
+    "table_only": "88 kB",
+    "total_bytes": 55599104
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_realizations",
+    "total": "27 MB",
+    "table_only": "11 MB",
+    "total_bytes": 28344320
+  },
+  {
+    "schemaname": "public",
+    "relname": "insight_snapshots",
+    "total": "15 MB",
+    "table_only": "56 kB",
+    "total_bytes": 15761408
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_catalog_snapshots",
+    "total": "6408 kB",
+    "table_only": "8192 bytes",
+    "total_bytes": 6561792
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_traffic_days",
+    "total": "4832 kB",
+    "table_only": "8192 bytes",
+    "total_bytes": 4947968
+  },
+  {
+    "schemaname": "public",
+    "relname": "wb_staged_records",
+    "total": "2184 kB",
+    "table_only": "0 bytes",
+    "total_bytes": 2236416
+  },
+  {
+    "schemaname": "public",
+    "relname": "notifications",
+    "total": "1976 kB",
+    "table_only": "1432 kB",
+    "total_bytes": 2023424
+  },
+  {
+    "schemaname": "public",
+    "relname": "inventory_snapshots",
+    "total": "1728 kB",
+    "table_only": "1136 kB",
+    "total_bytes": 1769472
+  },
+  {
+    "schemaname": "public",
+    "relname": "sync_runs",
+    "total": "696 kB",
+    "table_only": "328 kB",
+    "total_bytes": 712704
+  },
+  {
+    "schemaname": "public",
+    "relname": "catalog_import_previews",
+    "total": "640 kB",
+    "table_only": "8192 bytes",
+    "total_bytes": 655360
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_stock_cover",
+    "total": "608 kB",
+    "table_only": "8192 bytes",
+    "total_bytes": 622592
+  },
+  {
+    "schemaname": "public",
+    "relname": "supply_packaging",
+    "total": "512 kB",
+    "table_only": "240 kB",
+    "total_bytes": 524288
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_supply_snapshots",
+    "total": "344 kB",
+    "table_only": "8192 bytes",
+    "total_bytes": 352256
+  },
+  {
+    "schemaname": "public",
+    "relname": "audit_events",
+    "total": "272 kB",
+    "table_only": "160 kB",
+    "total_bytes": 278528
+  },
+  {
+    "schemaname": "public",
+    "relname": "store_credentials",
+    "total": "104 kB",
+    "table_only": "8192 bytes",
+    "total_bytes": 106496
+  },
+  {
+    "schemaname": "public",
+    "relname": "otp_challenges",
+    "total": "96 kB",
+    "table_only": "8192 bytes",
+    "total_bytes": 98304
+  },
+  {
+    "schemaname": "public",
+    "relname": "ozon_catalog_sync",
+    "total": "72 kB",
+    "table_only": "8192 bytes",
+    "total_bytes": 73728
+  },
+  {
+    "schemaname": "public",
+    "relname": "stores",
+    "total": "72 kB",
+    "table_only": "8192 bytes",
+    "total_bytes": 73728
+  },
+  {
+    "schemaname": "public",
+    "relname": "ozon_analytics_sync",
+    "total": "72 kB",
+    "table_only": "8192 bytes",
+    "total_bytes": 73728
+  },
+  {
+    "schemaname": "public",
+    "relname": "access_tokens",
+    "total": "72 kB",
+    "table_only": "8192 bytes",
+    "total_bytes": 73728
+  },
+  {
+    "schemaname": "public",
+    "relname": "auth_sessions",
+    "total": "72 kB",
+    "table_only": "8192 bytes",
+    "total_bytes": 73728
+  },
+  {
+    "schemaname": "public",
+    "relname": "users",
+    "total": "64 kB",
+    "table_only": "8192 bytes",
+    "total_bytes": 65536
+  }
+]
+
+=== Existing indexes ===
+[
+  {
+    "schemaname": "public",
+    "tablename": "access_tokens",
+    "indexname": "uq_access_tokens_token_digest",
+    "indexdef": "CREATE UNIQUE INDEX uq_access_tokens_token_digest ON public.access_tokens USING btree (token_digest)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "access_tokens",
+    "indexname": "pk_access_tokens",
+    "indexdef": "CREATE UNIQUE INDEX pk_access_tokens ON public.access_tokens USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "access_tokens",
+    "indexname": "ix_access_tokens_session_id",
+    "indexdef": "CREATE INDEX ix_access_tokens_session_id ON public.access_tokens USING btree (session_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "access_tokens",
+    "indexname": "ix_access_tokens_expires_at",
+    "indexdef": "CREATE INDEX ix_access_tokens_expires_at ON public.access_tokens USING btree (expires_at)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "alembic_version",
+    "indexname": "alembic_version_pkc",
+    "indexdef": "CREATE UNIQUE INDEX alembic_version_pkc ON public.alembic_version USING btree (version_num)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "audit_events",
+    "indexname": "pk_audit_events",
+    "indexdef": "CREATE UNIQUE INDEX pk_audit_events ON public.audit_events USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "audit_events",
+    "indexname": "ix_audit_events_user_id",
+    "indexdef": "CREATE INDEX ix_audit_events_user_id ON public.audit_events USING btree (user_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "audit_events",
+    "indexname": "ix_audit_events_workspace_id",
+    "indexdef": "CREATE INDEX ix_audit_events_workspace_id ON public.audit_events USING btree (workspace_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "auth_sessions",
+    "indexname": "ix_auth_sessions_user_id",
+    "indexdef": "CREATE INDEX ix_auth_sessions_user_id ON public.auth_sessions USING btree (user_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "auth_sessions",
+    "indexname": "pk_auth_sessions",
+    "indexdef": "CREATE UNIQUE INDEX pk_auth_sessions ON public.auth_sessions USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "auth_sessions",
+    "indexname": "ix_auth_sessions_expires_at",
+    "indexdef": "CREATE INDEX ix_auth_sessions_expires_at ON public.auth_sessions USING btree (expires_at)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "auth_sessions",
+    "indexname": "ix_auth_sessions_revoked_at",
+    "indexdef": "CREATE INDEX ix_auth_sessions_revoked_at ON public.auth_sessions USING btree (revoked_at)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "catalog_import_previews",
+    "indexname": "pk_catalog_import_previews",
+    "indexdef": "CREATE UNIQUE INDEX pk_catalog_import_previews ON public.catalog_import_previews USING btree (workspace_id, id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "catalog_overrides",
+    "indexname": "pk_catalog_overrides",
+    "indexdef": "CREATE UNIQUE INDEX pk_catalog_overrides ON public.catalog_overrides USING btree (workspace_id, store_id, nm_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "catalog_product_matches",
+    "indexname": "uq_catalog_match_left",
+    "indexdef": "CREATE UNIQUE INDEX uq_catalog_match_left ON public.catalog_product_matches USING btree (workspace_id, left_store_id, left_variant_id, right_store_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "catalog_product_matches",
+    "indexname": "pk_catalog_product_matches",
+    "indexdef": "CREATE UNIQUE INDEX pk_catalog_product_matches ON public.catalog_product_matches USING btree (workspace_id, id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "catalog_product_matches",
+    "indexname": "uq_catalog_match_right",
+    "indexdef": "CREATE UNIQUE INDEX uq_catalog_match_right ON public.catalog_product_matches USING btree (workspace_id, right_store_id, right_variant_id, left_store_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "cost_imports",
+    "indexname": "ix_cost_imports_expires_at",
+    "indexdef": "CREATE INDEX ix_cost_imports_expires_at ON public.cost_imports USING btree (expires_at)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "cost_imports",
+    "indexname": "pk_cost_imports",
+    "indexdef": "CREATE UNIQUE INDEX pk_cost_imports ON public.cost_imports USING btree (workspace_id, store_id, id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "external_expenses",
+    "indexname": "pk_external_expenses",
+    "indexdef": "CREATE UNIQUE INDEX pk_external_expenses ON public.external_expenses USING btree (workspace_id, store_id, id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "finance_days",
+    "indexname": "pk_finance_days",
+    "indexdef": "CREATE UNIQUE INDEX pk_finance_days ON public.finance_days USING btree (workspace_id, store_id, day, currency)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "finance_projections",
+    "indexname": "pk_finance_projections",
+    "indexdef": "CREATE UNIQUE INDEX pk_finance_projections ON public.finance_projections USING btree (workspace_id, store_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "import_issues",
+    "indexname": "pk_import_issues",
+    "indexdef": "CREATE UNIQUE INDEX pk_import_issues ON public.import_issues USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "import_issues",
+    "indexname": "uq_import_issues_workspace_id",
+    "indexdef": "CREATE UNIQUE INDEX uq_import_issues_workspace_id ON public.import_issues USING btree (workspace_id, store_id, source, record_key)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "insight_snapshots",
+    "indexname": "pk_insight_snapshots",
+    "indexdef": "CREATE UNIQUE INDEX pk_insight_snapshots ON public.insight_snapshots USING btree (workspace_id, store_id, kind, params_key)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "insight_snapshots",
+    "indexname": "ix_insight_snapshots_computed_at",
+    "indexdef": "CREATE INDEX ix_insight_snapshots_computed_at ON public.insight_snapshots USING btree (computed_at)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "inventory_settings",
+    "indexname": "pk_inventory_settings",
+    "indexdef": "CREATE UNIQUE INDEX pk_inventory_settings ON public.inventory_settings USING btree (workspace_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "inventory_snapshots",
+    "indexname": "pk_inventory_snapshots",
+    "indexdef": "CREATE UNIQUE INDEX pk_inventory_snapshots ON public.inventory_snapshots USING btree (workspace_id, store_id, day, nm_id, channel)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "inventory_snapshots",
+    "indexname": "ix_inventory_snapshots_day",
+    "indexdef": "CREATE INDEX ix_inventory_snapshots_day ON public.inventory_snapshots USING btree (day)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "marketplace_catalog_snapshots",
+    "indexname": "pk_marketplace_catalog_snapshots",
+    "indexdef": "CREATE UNIQUE INDEX pk_marketplace_catalog_snapshots ON public.marketplace_catalog_snapshots USING btree (workspace_id, store_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "marketplace_finance_days",
+    "indexname": "pk_marketplace_finance_days",
+    "indexdef": "CREATE UNIQUE INDEX pk_marketplace_finance_days ON public.marketplace_finance_days USING btree (workspace_id, store_id, day)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "marketplace_realizations",
+    "indexname": "ix_marketplace_realizations_posting",
+    "indexdef": "CREATE INDEX ix_marketplace_realizations_posting ON public.marketplace_realizations USING btree (workspace_id, store_id, posting_key)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "marketplace_realizations",
+    "indexname": "pk_marketplace_realizations",
+    "indexdef": "CREATE UNIQUE INDEX pk_marketplace_realizations ON public.marketplace_realizations USING btree (workspace_id, store_id, day, posting_key, sku)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "marketplace_sales_days",
+    "indexname": "pk_marketplace_sales_days",
+    "indexdef": "CREATE UNIQUE INDEX pk_marketplace_sales_days ON public.marketplace_sales_days USING btree (workspace_id, store_id, day)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "marketplace_stock_cover",
+    "indexname": "pk_marketplace_stock_cover",
+    "indexdef": "CREATE UNIQUE INDEX pk_marketplace_stock_cover ON public.marketplace_stock_cover USING btree (workspace_id, store_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "marketplace_supply_snapshots",
+    "indexname": "pk_marketplace_supply_snapshots",
+    "indexdef": "CREATE UNIQUE INDEX pk_marketplace_supply_snapshots ON public.marketplace_supply_snapshots USING btree (workspace_id, store_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "marketplace_traffic_days",
+    "indexname": "pk_marketplace_traffic_days",
+    "indexdef": "CREATE UNIQUE INDEX pk_marketplace_traffic_days ON public.marketplace_traffic_days USING btree (workspace_id, store_id, day)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "marketplace_variant_costs",
+    "indexname": "pk_marketplace_variant_costs",
+    "indexdef": "CREATE UNIQUE INDEX pk_marketplace_variant_costs ON public.marketplace_variant_costs USING btree (workspace_id, store_id, variant_id, currency, effective_from)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "memberships",
+    "indexname": "pk_memberships",
+    "indexdef": "CREATE UNIQUE INDEX pk_memberships ON public.memberships USING btree (user_id, workspace_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "notification_settings",
+    "indexname": "pk_notification_settings",
+    "indexdef": "CREATE UNIQUE INDEX pk_notification_settings ON public.notification_settings USING btree (user_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "notifications",
+    "indexname": "ix_notifications_active_incident",
+    "indexdef": "CREATE INDEX ix_notifications_active_incident ON public.notifications USING btree (user_id, incident_key, resolved_at)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "notifications",
+    "indexname": "pk_notifications",
+    "indexdef": "CREATE UNIQUE INDEX pk_notifications ON public.notifications USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "notifications",
+    "indexname": "uq_notifications_user_id",
+    "indexdef": "CREATE UNIQUE INDEX uq_notifications_user_id ON public.notifications USING btree (user_id, dedupe_key)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "notifications",
+    "indexname": "ix_notifications_created_at",
+    "indexdef": "CREATE INDEX ix_notifications_created_at ON public.notifications USING btree (created_at)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "notifications",
+    "indexname": "ix_notifications_user_id",
+    "indexdef": "CREATE INDEX ix_notifications_user_id ON public.notifications USING btree (user_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "otp_challenges",
+    "indexname": "ix_otp_challenges_destination_digest",
+    "indexdef": "CREATE INDEX ix_otp_challenges_destination_digest ON public.otp_challenges USING btree (destination_digest)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "otp_challenges",
+    "indexname": "ix_otp_challenges_expires_at",
+    "indexdef": "CREATE INDEX ix_otp_challenges_expires_at ON public.otp_challenges USING btree (expires_at)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "otp_challenges",
+    "indexname": "ix_otp_challenges_session_id",
+    "indexdef": "CREATE INDEX ix_otp_challenges_session_id ON public.otp_challenges USING btree (session_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "otp_challenges",
+    "indexname": "ix_otp_challenges_user_id",
+    "indexdef": "CREATE INDEX ix_otp_challenges_user_id ON public.otp_challenges USING btree (user_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "otp_challenges",
+    "indexname": "pk_otp_challenges",
+    "indexdef": "CREATE UNIQUE INDEX pk_otp_challenges ON public.otp_challenges USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "ozon_analytics_sync",
+    "indexname": "ix_ozon_analytics_due",
+    "indexdef": "CREATE INDEX ix_ozon_analytics_due ON public.ozon_analytics_sync USING btree (next_attempt_at)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "ozon_analytics_sync",
+    "indexname": "pk_ozon_analytics_sync",
+    "indexdef": "CREATE UNIQUE INDEX pk_ozon_analytics_sync ON public.ozon_analytics_sync USING btree (workspace_id, store_id, source)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "ozon_catalog_sync",
+    "indexname": "pk_ozon_catalog_sync",
+    "indexdef": "CREATE UNIQUE INDEX pk_ozon_catalog_sync ON public.ozon_catalog_sync USING btree (workspace_id, store_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "ozon_catalog_sync",
+    "indexname": "ix_ozon_catalog_due",
+    "indexdef": "CREATE INDEX ix_ozon_catalog_due ON public.ozon_catalog_sync USING btree (next_attempt_at)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "product_costs",
+    "indexname": "pk_product_costs",
+    "indexdef": "CREATE UNIQUE INDEX pk_product_costs ON public.product_costs USING btree (workspace_id, store_id, nm_id, barcode, currency, effective_from)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "push_devices",
+    "indexname": "pk_push_devices",
+    "indexdef": "CREATE UNIQUE INDEX pk_push_devices ON public.push_devices USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "push_devices",
+    "indexname": "uq_push_devices_token_digest",
+    "indexdef": "CREATE UNIQUE INDEX uq_push_devices_token_digest ON public.push_devices USING btree (token_digest)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "push_devices",
+    "indexname": "ix_push_devices_user_id",
+    "indexdef": "CREATE INDEX ix_push_devices_user_id ON public.push_devices USING btree (user_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "recovery_codes",
+    "indexname": "ix_recovery_codes_user_id",
+    "indexdef": "CREATE INDEX ix_recovery_codes_user_id ON public.recovery_codes USING btree (user_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "recovery_codes",
+    "indexname": "uq_recovery_codes_user_id",
+    "indexdef": "CREATE UNIQUE INDEX uq_recovery_codes_user_id ON public.recovery_codes USING btree (user_id, code_digest)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "recovery_codes",
+    "indexname": "pk_recovery_codes",
+    "indexdef": "CREATE UNIQUE INDEX pk_recovery_codes ON public.recovery_codes USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "refresh_tokens",
+    "indexname": "pk_refresh_tokens",
+    "indexdef": "CREATE UNIQUE INDEX pk_refresh_tokens ON public.refresh_tokens USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "refresh_tokens",
+    "indexname": "ix_refresh_tokens_session_id",
+    "indexdef": "CREATE INDEX ix_refresh_tokens_session_id ON public.refresh_tokens USING btree (session_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "refresh_tokens",
+    "indexname": "uq_refresh_tokens_token_digest",
+    "indexdef": "CREATE UNIQUE INDEX uq_refresh_tokens_token_digest ON public.refresh_tokens USING btree (token_digest)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "store_credentials",
+    "indexname": "uq_store_credentials_store_id",
+    "indexdef": "CREATE UNIQUE INDEX uq_store_credentials_store_id ON public.store_credentials USING btree (store_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "store_credentials",
+    "indexname": "pk_store_credentials",
+    "indexdef": "CREATE UNIQUE INDEX pk_store_credentials ON public.store_credentials USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "store_events",
+    "indexname": "ix_store_events_day",
+    "indexdef": "CREATE INDEX ix_store_events_day ON public.store_events USING btree (day)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "store_events",
+    "indexname": "pk_store_events",
+    "indexdef": "CREATE UNIQUE INDEX pk_store_events ON public.store_events USING btree (workspace_id, store_id, id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "store_goals",
+    "indexname": "pk_store_goals",
+    "indexdef": "CREATE UNIQUE INDEX pk_store_goals ON public.store_goals USING btree (workspace_id, store_id, month, metric)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "stores",
+    "indexname": "uq_stores_workspace_id_id",
+    "indexdef": "CREATE UNIQUE INDEX uq_stores_workspace_id_id ON public.stores USING btree (workspace_id, id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "stores",
+    "indexname": "ix_stores_workspace_id",
+    "indexdef": "CREATE INDEX ix_stores_workspace_id ON public.stores USING btree (workspace_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "stores",
+    "indexname": "pk_stores",
+    "indexdef": "CREATE UNIQUE INDEX pk_stores ON public.stores USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "stores",
+    "indexname": "uq_stores_workspace_marketplace_seller",
+    "indexdef": "CREATE UNIQUE INDEX uq_stores_workspace_marketplace_seller ON public.stores USING btree (workspace_id, marketplace, external_seller_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "supply_destination_snapshots",
+    "indexname": "pk_supply_destination_snapshots",
+    "indexdef": "CREATE UNIQUE INDEX pk_supply_destination_snapshots ON public.supply_destination_snapshots USING btree (workspace_id, store_id, product_key)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "supply_destination_sync",
+    "indexname": "ix_supply_destination_due",
+    "indexdef": "CREATE INDEX ix_supply_destination_due ON public.supply_destination_sync USING btree (next_attempt_at)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "supply_destination_sync",
+    "indexname": "pk_supply_destination_sync",
+    "indexdef": "CREATE UNIQUE INDEX pk_supply_destination_sync ON public.supply_destination_sync USING btree (workspace_id, store_id, product_key)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "supply_packaging",
+    "indexname": "pk_supply_packaging",
+    "indexdef": "CREATE UNIQUE INDEX pk_supply_packaging ON public.supply_packaging USING btree (workspace_id, store_id, product_key)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "supply_plans",
+    "indexname": "ix_supply_plans_workspace_updated",
+    "indexdef": "CREATE INDEX ix_supply_plans_workspace_updated ON public.supply_plans USING btree (workspace_id, updated_at, id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "supply_plans",
+    "indexname": "pk_supply_plans",
+    "indexdef": "CREATE UNIQUE INDEX pk_supply_plans ON public.supply_plans USING btree (workspace_id, id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "supply_plans",
+    "indexname": "ix_supply_plans_store_id",
+    "indexdef": "CREATE INDEX ix_supply_plans_store_id ON public.supply_plans USING btree (store_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "sync_runs",
+    "indexname": "uq_sync_runs_active_source",
+    "indexdef": "CREATE UNIQUE INDEX uq_sync_runs_active_source ON public.sync_runs USING btree (workspace_id, store_id, source) WHERE (((status)::text = ANY (ARRAY[('queued'::character varying)::text, ('running'::character varying)::text])) AND ((source)::text = ANY (ARRAY[('catalog'::character varying)::text, ('sales'::character varying)::text, ('stocks'::character varying)::text, ('finance'::character varying)::text, ('orders'::character varying)::text, ('funnel'::character varying)::text, ('returns'::character varying)::text, ('balance'::character varying)::text, ('prices'::character varying)::text, ('fbs'::character varying)::text, ('stock_history'::character varying)::text, ('supply_demand'::character varying)::text, ('supplies'::character varying)::text, ('fbs_demand'::character varying)::text])))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "sync_runs",
+    "indexname": "pk_sync_runs",
+    "indexdef": "CREATE UNIQUE INDEX pk_sync_runs ON public.sync_runs USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "sync_runs",
+    "indexname": "uq_sync_runs_active_funnel_summary",
+    "indexdef": "CREATE UNIQUE INDEX uq_sync_runs_active_funnel_summary ON public.sync_runs USING btree (workspace_id, store_id, date_from, date_to) WHERE (((source)::text = 'funnel_summary'::text) AND ((status)::text = ANY (ARRAY[('queued'::character varying)::text, ('running'::character varying)::text])))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "sync_runs",
+    "indexname": "uq_sync_runs_task_id",
+    "indexdef": "CREATE UNIQUE INDEX uq_sync_runs_task_id ON public.sync_runs USING btree (task_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "sync_runs",
+    "indexname": "uq_sync_runs_tenant_id",
+    "indexdef": "CREATE UNIQUE INDEX uq_sync_runs_tenant_id ON public.sync_runs USING btree (workspace_id, store_id, id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "sync_runs",
+    "indexname": "ix_sync_runs_workspace_store_created",
+    "indexdef": "CREATE INDEX ix_sync_runs_workspace_store_created ON public.sync_runs USING btree (workspace_id, store_id, created_at)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "sync_schedules",
+    "indexname": "pk_sync_schedules",
+    "indexdef": "CREATE UNIQUE INDEX pk_sync_schedules ON public.sync_schedules USING btree (workspace_id, store_id, source)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "tax_settings",
+    "indexname": "pk_tax_settings",
+    "indexdef": "CREATE UNIQUE INDEX pk_tax_settings ON public.tax_settings USING btree (workspace_id, store_id, effective_from)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "users",
+    "indexname": "pk_users",
+    "indexdef": "CREATE UNIQUE INDEX pk_users ON public.users USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "users",
+    "indexname": "uq_users_phone",
+    "indexdef": "CREATE UNIQUE INDEX uq_users_phone ON public.users USING btree (phone)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "users",
+    "indexname": "uq_users_email",
+    "indexdef": "CREATE UNIQUE INDEX uq_users_email ON public.users USING btree (email)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "wb_daily_metrics",
+    "indexname": "pk_wb_daily_metrics",
+    "indexdef": "CREATE UNIQUE INDEX pk_wb_daily_metrics ON public.wb_daily_metrics USING btree (workspace_id, store_id, source, dataset, day, nm_id, currency)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "wb_metric_versions",
+    "indexname": "pk_wb_metric_versions",
+    "indexdef": "CREATE UNIQUE INDEX pk_wb_metric_versions ON public.wb_metric_versions USING btree (workspace_id, store_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "wb_records",
+    "indexname": "pk_wb_records",
+    "indexdef": "CREATE UNIQUE INDEX pk_wb_records ON public.wb_records USING btree (workspace_id, store_id, source, record_key)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "wb_staged_records",
+    "indexname": "pk_wb_staged_records",
+    "indexdef": "CREATE UNIQUE INDEX pk_wb_staged_records ON public.wb_staged_records USING btree (run_id, record_key)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "workspace_invites",
+    "indexname": "pk_workspace_invites",
+    "indexdef": "CREATE UNIQUE INDEX pk_workspace_invites ON public.workspace_invites USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "workspace_invites",
+    "indexname": "ix_workspace_invites_workspace_id",
+    "indexdef": "CREATE INDEX ix_workspace_invites_workspace_id ON public.workspace_invites USING btree (workspace_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "workspace_invites",
+    "indexname": "uq_workspace_invites_token_digest",
+    "indexdef": "CREATE UNIQUE INDEX uq_workspace_invites_token_digest ON public.workspace_invites USING btree (token_digest)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "workspaces",
+    "indexname": "ix_workspaces_owner_user_id",
+    "indexdef": "CREATE INDEX ix_workspaces_owner_user_id ON public.workspaces USING btree (owner_user_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "workspaces",
+    "indexname": "pk_workspaces",
+    "indexdef": "CREATE UNIQUE INDEX pk_workspaces ON public.workspaces USING btree (id)"
+  }
+]
+
+=== Materialized views ===
+[]
+
+=== Cache hit ratio ===
+[
+  {
+    "cache_hit_pct": 98.46
+  }
+]
+
+=== All table estimates and analyze timestamps ===
+[
+  {
+    "schemaname": "public",
+    "relname": "access_tokens",
+    "n_live_tup": 15,
+    "n_dead_tup": 33,
+    "n_mod_since_analyze": 33,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-25T07:39:20.89664+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "alembic_version",
+    "n_live_tup": 1,
+    "n_dead_tup": 2,
+    "n_mod_since_analyze": 3,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "audit_events",
+    "n_live_tup": 1019,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 76,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-27T07:37:27.11659+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": "2026-11-15T00:47:43.431085+00:00"
+  },
+  {
+    "schemaname": "public",
+    "relname": "auth_sessions",
+    "n_live_tup": 15,
+    "n_dead_tup": 30,
+    "n_mod_since_analyze": 36,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-25T02:09:15.423651+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "catalog_import_previews",
+    "n_live_tup": 1,
+    "n_dead_tup": 1,
+    "n_mod_since_analyze": 6,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "catalog_overrides",
+    "n_live_tup": 0,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 5,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "catalog_product_matches",
+    "n_live_tup": 0,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 0,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-13T08:59:43.236654+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": "2026-11-13T08:59:43.219685+00:00"
+  },
+  {
+    "schemaname": "public",
+    "relname": "cost_imports",
+    "n_live_tup": 0,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 0,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "external_expenses",
+    "n_live_tup": 0,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 1,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "finance_days",
+    "n_live_tup": 0,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 0,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-15T16:45:19.113773+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": "2026-11-15T16:45:19.103504+00:00"
+  },
+  {
+    "schemaname": "public",
+    "relname": "finance_projections",
+    "n_live_tup": 0,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 50,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "import_issues",
+    "n_live_tup": 0,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 0,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "insight_snapshots",
+    "n_live_tup": 83,
+    "n_dead_tup": 63,
+    "n_mod_since_analyze": 50,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-27T13:43:33.371565+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": "2026-11-27T13:41:34.261688+00:00"
+  },
+  {
+    "schemaname": "public",
+    "relname": "inventory_settings",
+    "n_live_tup": 0,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 2,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "inventory_snapshots",
+    "n_live_tup": 3531,
+    "n_dead_tup": 252,
+    "n_mod_since_analyze": 0,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-27T13:49:33.517568+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": "2026-11-27T13:41:33.364511+00:00"
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_catalog_snapshots",
+    "n_live_tup": 1,
+    "n_dead_tup": 50,
+    "n_mod_since_analyze": 1,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-27T12:30:32.177905+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": "2026-11-25T10:53:23.980546+00:00"
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_finance_days",
+    "n_live_tup": 733,
+    "n_dead_tup": 51,
+    "n_mod_since_analyze": 70,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-26T23:49:19.273159+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_realizations",
+    "n_live_tup": 39907,
+    "n_dead_tup": 2994,
+    "n_mod_since_analyze": 0,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-27T11:49:31.917816+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": "2026-11-26T23:49:19.380725+00:00"
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_sales_days",
+    "n_live_tup": 733,
+    "n_dead_tup": 61,
+    "n_mod_since_analyze": 112,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-27T00:35:20.104076+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": "2026-11-26T12:32:07.53479+00:00"
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_stock_cover",
+    "n_live_tup": 1,
+    "n_dead_tup": 16,
+    "n_mod_since_analyze": 35,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_supply_snapshots",
+    "n_live_tup": 1,
+    "n_dead_tup": 50,
+    "n_mod_since_analyze": 2,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-27T11:22:31.116312+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": "2026-11-25T10:52:23.961929+00:00"
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_traffic_days",
+    "n_live_tup": 56,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 0,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-23T08:42:22.299358+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_variant_costs",
+    "n_live_tup": 0,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 1,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "memberships",
+    "n_live_tup": 6,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 8,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "notification_settings",
+    "n_live_tup": 4,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 15,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "notifications",
+    "n_live_tup": 692,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 0,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-27T14:14:34.026529+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": "2026-11-27T14:14:33.990086+00:00"
+  },
+  {
+    "schemaname": "public",
+    "relname": "otp_challenges",
+    "n_live_tup": 8,
+    "n_dead_tup": 27,
+    "n_mod_since_analyze": 40,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-23T07:58:21.670601+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "ozon_analytics_sync",
+    "n_live_tup": 5,
+    "n_dead_tup": 42,
+    "n_mod_since_analyze": 45,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-27T13:54:33.660929+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": "2026-11-27T13:55:33.575592+00:00"
+  },
+  {
+    "schemaname": "public",
+    "relname": "ozon_catalog_sync",
+    "n_live_tup": 1,
+    "n_dead_tup": 25,
+    "n_mod_since_analyze": 5,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-27T12:30:32.186534+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": "2026-11-27T08:28:27.911979+00:00"
+  },
+  {
+    "schemaname": "public",
+    "relname": "product_costs",
+    "n_live_tup": 0,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 5,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "push_devices",
+    "n_live_tup": 0,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 0,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "recovery_codes",
+    "n_live_tup": 40,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 0,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-24T02:42:40.517059+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "refresh_tokens",
+    "n_live_tup": 48,
+    "n_dead_tup": 2,
+    "n_mod_since_analyze": 36,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-25T02:09:15.425764+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "store_credentials",
+    "n_live_tup": 2,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 6,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "store_events",
+    "n_live_tup": 0,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 0,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "store_goals",
+    "n_live_tup": 0,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 0,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "stores",
+    "n_live_tup": 2,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 6,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "supply_destination_snapshots",
+    "n_live_tup": 0,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 0,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-11T11:44:00.778499+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "supply_destination_sync",
+    "n_live_tup": 0,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 0,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-11T14:55:43.594316+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": "2026-11-11T14:55:43.583523+00:00"
+  },
+  {
+    "schemaname": "public",
+    "relname": "supply_packaging",
+    "n_live_tup": 1784,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 0,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-26T06:48:01.518872+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": "2026-11-26T06:48:01.50111+00:00"
+  },
+  {
+    "schemaname": "public",
+    "relname": "supply_plans",
+    "n_live_tup": 0,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 7,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "sync_runs",
+    "n_live_tup": 1031,
+    "n_dead_tup": 177,
+    "n_mod_since_analyze": 51,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-27T13:42:33.3849+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": "2026-11-27T12:22:32.062647+00:00"
+  },
+  {
+    "schemaname": "public",
+    "relname": "sync_schedules",
+    "n_live_tup": 14,
+    "n_dead_tup": 3,
+    "n_mod_since_analyze": 8,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-27T13:38:33.289417+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "tax_settings",
+    "n_live_tup": 0,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 4,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "users",
+    "n_live_tup": 5,
+    "n_dead_tup": 5,
+    "n_mod_since_analyze": 15,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "wb_daily_metrics",
+    "n_live_tup": 94141,
+    "n_dead_tup": 18000,
+    "n_mod_since_analyze": 3537,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-27T11:25:31.690372+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": "2026-11-27T09:14:29.503939+00:00"
+  },
+  {
+    "schemaname": "public",
+    "relname": "wb_metric_versions",
+    "n_live_tup": 1,
+    "n_dead_tup": 6,
+    "n_mod_since_analyze": 12,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-27T13:24:33.089503+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": "2026-11-27T13:43:33.358776+00:00"
+  },
+  {
+    "schemaname": "public",
+    "relname": "wb_records",
+    "n_live_tup": 110261,
+    "n_dead_tup": 1316,
+    "n_mod_since_analyze": 2524,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-27T13:41:34.256491+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": "2026-11-27T13:41:33.76856+00:00"
+  },
+  {
+    "schemaname": "public",
+    "relname": "wb_staged_records",
+    "n_live_tup": 0,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 0,
+    "last_analyze": null,
+    "last_autoanalyze": "2026-11-27T14:16:33.988618+00:00",
+    "last_vacuum": null,
+    "last_autovacuum": "2026-11-27T14:17:34.011412+00:00"
+  },
+  {
+    "schemaname": "public",
+    "relname": "workspace_invites",
+    "n_live_tup": 2,
+    "n_dead_tup": 2,
+    "n_mod_since_analyze": 6,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  },
+  {
+    "schemaname": "public",
+    "relname": "workspaces",
+    "n_live_tup": 4,
+    "n_dead_tup": 0,
+    "n_mod_since_analyze": 6,
+    "last_analyze": null,
+    "last_autoanalyze": null,
+    "last_vacuum": null,
+    "last_autovacuum": null
+  }
+]
+
+=== All index usage and size ===
+[
+  {
+    "schemaname": "public",
+    "relname": "wb_daily_metrics",
+    "indexrelname": "pk_wb_daily_metrics",
+    "idx_scan": 1135532,
+    "idx_tup_read": 93452372,
+    "idx_tup_fetch": 77006810,
+    "size": "20 MB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "wb_records",
+    "indexrelname": "pk_wb_records",
+    "idx_scan": 4348612,
+    "idx_tup_read": 190183529,
+    "idx_tup_fetch": 72889080,
+    "size": "14 MB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_realizations",
+    "indexrelname": "pk_marketplace_realizations",
+    "idx_scan": 2887,
+    "idx_tup_read": 113008,
+    "idx_tup_fetch": 51175,
+    "size": "9216 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_realizations",
+    "indexrelname": "ix_marketplace_realizations_posting",
+    "idx_scan": 1456013,
+    "idx_tup_read": 3069096,
+    "idx_tup_fetch": 2080229,
+    "size": "6920 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "wb_staged_records",
+    "indexrelname": "pk_wb_staged_records",
+    "idx_scan": 3541809,
+    "idx_tup_read": 28919902,
+    "idx_tup_fetch": 24534539,
+    "size": "2048 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "inventory_snapshots",
+    "indexrelname": "pk_inventory_snapshots",
+    "idx_scan": 13743,
+    "idx_tup_read": 4820515,
+    "idx_tup_fetch": 4503007,
+    "size": "424 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "supply_packaging",
+    "indexrelname": "pk_supply_packaging",
+    "idx_scan": 2146,
+    "idx_tup_read": 7136,
+    "idx_tup_fetch": 7136,
+    "size": "240 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "notifications",
+    "indexrelname": "ix_notifications_active_incident",
+    "idx_scan": 653019,
+    "idx_tup_read": 652409,
+    "idx_tup_fetch": 652311,
+    "size": "144 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "notifications",
+    "indexrelname": "uq_notifications_user_id",
+    "idx_scan": 1754,
+    "idx_tup_read": 829,
+    "idx_tup_fetch": 828,
+    "size": "120 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "sync_runs",
+    "indexrelname": "uq_sync_runs_tenant_id",
+    "idx_scan": 2192841,
+    "idx_tup_read": 2319233,
+    "idx_tup_fetch": 2192841,
+    "size": "104 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "inventory_snapshots",
+    "indexrelname": "ix_inventory_snapshots_day",
+    "idx_scan": 1159,
+    "idx_tup_read": 81117,
+    "idx_tup_fetch": 52678,
+    "size": "104 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_sales_days",
+    "indexrelname": "pk_marketplace_sales_days",
+    "idx_scan": 9194,
+    "idx_tup_read": 139586,
+    "idx_tup_fetch": 3424,
+    "size": "96 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_finance_days",
+    "indexrelname": "pk_marketplace_finance_days",
+    "idx_scan": 6352,
+    "idx_tup_read": 32873,
+    "idx_tup_fetch": 6879,
+    "size": "96 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "sync_runs",
+    "indexrelname": "ix_sync_runs_workspace_store_created",
+    "idx_scan": 112120,
+    "idx_tup_read": 12123616,
+    "idx_tup_fetch": 12095407,
+    "size": "72 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "audit_events",
+    "indexrelname": "pk_audit_events",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "56 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "notifications",
+    "indexrelname": "pk_notifications",
+    "idx_scan": 653265,
+    "idx_tup_read": 653713,
+    "idx_tup_fetch": 653265,
+    "size": "56 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "sync_runs",
+    "indexrelname": "pk_sync_runs",
+    "idx_scan": 459046,
+    "idx_tup_read": 516431,
+    "idx_tup_fetch": 459046,
+    "size": "56 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "insight_snapshots",
+    "indexrelname": "pk_insight_snapshots",
+    "idx_scan": 71788,
+    "idx_tup_read": 84877,
+    "idx_tup_fetch": 71286,
+    "size": "40 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "sync_runs",
+    "indexrelname": "uq_sync_runs_task_id",
+    "idx_scan": 25698,
+    "idx_tup_read": 28514,
+    "idx_tup_fetch": 25698,
+    "size": "40 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "recovery_codes",
+    "indexrelname": "ix_recovery_codes_user_id",
+    "idx_scan": 5,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "access_tokens",
+    "indexrelname": "pk_access_tokens",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "auth_sessions",
+    "indexrelname": "pk_auth_sessions",
+    "idx_scan": 5956,
+    "idx_tup_read": 5957,
+    "idx_tup_fetch": 5956,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "catalog_import_previews",
+    "indexrelname": "pk_catalog_import_previews",
+    "idx_scan": 8,
+    "idx_tup_read": 4,
+    "idx_tup_fetch": 4,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_catalog_snapshots",
+    "indexrelname": "pk_marketplace_catalog_snapshots",
+    "idx_scan": 2275,
+    "idx_tup_read": 2249,
+    "idx_tup_fetch": 2249,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_stock_cover",
+    "indexrelname": "pk_marketplace_stock_cover",
+    "idx_scan": 1968,
+    "idx_tup_read": 1928,
+    "idx_tup_fetch": 1928,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_supply_snapshots",
+    "indexrelname": "pk_marketplace_supply_snapshots",
+    "idx_scan": 1113,
+    "idx_tup_read": 1096,
+    "idx_tup_fetch": 1096,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_traffic_days",
+    "indexrelname": "pk_marketplace_traffic_days",
+    "idx_scan": 5077,
+    "idx_tup_read": 54542,
+    "idx_tup_fetch": 50233,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "memberships",
+    "indexrelname": "pk_memberships",
+    "idx_scan": 677843275,
+    "idx_tup_read": 678093088,
+    "idx_tup_fetch": 677018882,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "notification_settings",
+    "indexrelname": "pk_notification_settings",
+    "idx_scan": 9343,
+    "idx_tup_read": 9334,
+    "idx_tup_fetch": 9334,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "otp_challenges",
+    "indexrelname": "pk_otp_challenges",
+    "idx_scan": 24,
+    "idx_tup_read": 24,
+    "idx_tup_fetch": 24,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "ozon_analytics_sync",
+    "indexrelname": "pk_ozon_analytics_sync",
+    "idx_scan": 237,
+    "idx_tup_read": 276,
+    "idx_tup_fetch": 227,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "ozon_catalog_sync",
+    "indexrelname": "pk_ozon_catalog_sync",
+    "idx_scan": 399,
+    "idx_tup_read": 440,
+    "idx_tup_fetch": 397,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "recovery_codes",
+    "indexrelname": "pk_recovery_codes",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "refresh_tokens",
+    "indexrelname": "pk_refresh_tokens",
+    "idx_scan": 84,
+    "idx_tup_read": 84,
+    "idx_tup_fetch": 84,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "store_credentials",
+    "indexrelname": "pk_store_credentials",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "stores",
+    "indexrelname": "uq_stores_workspace_marketplace_seller",
+    "idx_scan": 2162,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "users",
+    "indexrelname": "uq_users_email",
+    "idx_scan": 44,
+    "idx_tup_read": 15,
+    "idx_tup_fetch": 12,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "users",
+    "indexrelname": "uq_users_phone",
+    "idx_scan": 6,
+    "idx_tup_read": 1,
+    "idx_tup_fetch": 1,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "workspace_invites",
+    "indexrelname": "uq_workspace_invites_token_digest",
+    "idx_scan": 15,
+    "idx_tup_read": 15,
+    "idx_tup_fetch": 15,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "access_tokens",
+    "indexrelname": "ix_access_tokens_expires_at",
+    "idx_scan": 43,
+    "idx_tup_read": 93,
+    "idx_tup_fetch": 48,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "access_tokens",
+    "indexrelname": "ix_access_tokens_session_id",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "audit_events",
+    "indexrelname": "ix_audit_events_user_id",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "audit_events",
+    "indexrelname": "ix_audit_events_workspace_id",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "auth_sessions",
+    "indexrelname": "ix_auth_sessions_expires_at",
+    "idx_scan": 1756,
+    "idx_tup_read": 1715,
+    "idx_tup_fetch": 1714,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "auth_sessions",
+    "indexrelname": "ix_auth_sessions_revoked_at",
+    "idx_scan": 80,
+    "idx_tup_read": 32,
+    "idx_tup_fetch": 32,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "auth_sessions",
+    "indexrelname": "ix_auth_sessions_user_id",
+    "idx_scan": 1,
+    "idx_tup_read": 1,
+    "idx_tup_fetch": 1,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "insight_snapshots",
+    "indexrelname": "ix_insight_snapshots_computed_at",
+    "idx_scan": 86,
+    "idx_tup_read": 38,
+    "idx_tup_fetch": 35,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "notifications",
+    "indexrelname": "ix_notifications_created_at",
+    "idx_scan": 3833,
+    "idx_tup_read": 248205,
+    "idx_tup_fetch": 2791,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "notifications",
+    "indexrelname": "ix_notifications_user_id",
+    "idx_scan": 4613,
+    "idx_tup_read": 812948,
+    "idx_tup_fetch": 159959,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "otp_challenges",
+    "indexrelname": "ix_otp_challenges_destination_digest",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "otp_challenges",
+    "indexrelname": "ix_otp_challenges_expires_at",
+    "idx_scan": 17,
+    "idx_tup_read": 38,
+    "idx_tup_fetch": 16,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "otp_challenges",
+    "indexrelname": "ix_otp_challenges_session_id",
+    "idx_scan": 24,
+    "idx_tup_read": 33,
+    "idx_tup_fetch": 32,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "otp_challenges",
+    "indexrelname": "ix_otp_challenges_user_id",
+    "idx_scan": 2,
+    "idx_tup_read": 3,
+    "idx_tup_fetch": 3,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "ozon_analytics_sync",
+    "indexrelname": "ix_ozon_analytics_due",
+    "idx_scan": 1505760,
+    "idx_tup_read": 679829,
+    "idx_tup_fetch": 619192,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "ozon_catalog_sync",
+    "indexrelname": "ix_ozon_catalog_due",
+    "idx_scan": 15,
+    "idx_tup_read": 168,
+    "idx_tup_fetch": 0,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "alembic_version",
+    "indexrelname": "alembic_version_pkc",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "refresh_tokens",
+    "indexrelname": "ix_refresh_tokens_session_id",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "stores",
+    "indexrelname": "ix_stores_workspace_id",
+    "idx_scan": 3937758,
+    "idx_tup_read": 4185629,
+    "idx_tup_fetch": 4185629,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "workspace_invites",
+    "indexrelname": "ix_workspace_invites_workspace_id",
+    "idx_scan": 12,
+    "idx_tup_read": 8,
+    "idx_tup_fetch": 8,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "workspaces",
+    "indexrelname": "ix_workspaces_owner_user_id",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "sync_runs",
+    "indexrelname": "uq_sync_runs_active_funnel_summary",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "sync_runs",
+    "indexrelname": "uq_sync_runs_active_source",
+    "idx_scan": 90657,
+    "idx_tup_read": 36652,
+    "idx_tup_fetch": 27062,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "stores",
+    "indexrelname": "pk_stores",
+    "idx_scan": 10892,
+    "idx_tup_read": 10892,
+    "idx_tup_fetch": 10892,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "sync_schedules",
+    "indexrelname": "pk_sync_schedules",
+    "idx_scan": 2643,
+    "idx_tup_read": 2662,
+    "idx_tup_fetch": 2662,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "users",
+    "indexrelname": "pk_users",
+    "idx_scan": 99432411,
+    "idx_tup_read": 99432470,
+    "idx_tup_fetch": 99432411,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "wb_metric_versions",
+    "indexrelname": "pk_wb_metric_versions",
+    "idx_scan": 2946,
+    "idx_tup_read": 2907,
+    "idx_tup_fetch": 2907,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "workspace_invites",
+    "indexrelname": "pk_workspace_invites",
+    "idx_scan": 2,
+    "idx_tup_read": 2,
+    "idx_tup_fetch": 2,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "workspaces",
+    "indexrelname": "pk_workspaces",
+    "idx_scan": 35397,
+    "idx_tup_read": 35397,
+    "idx_tup_fetch": 35397,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "access_tokens",
+    "indexrelname": "uq_access_tokens_token_digest",
+    "idx_scan": 3479,
+    "idx_tup_read": 3479,
+    "idx_tup_fetch": 3479,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "recovery_codes",
+    "indexrelname": "uq_recovery_codes_user_id",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "refresh_tokens",
+    "indexrelname": "uq_refresh_tokens_token_digest",
+    "idx_scan": 43,
+    "idx_tup_read": 42,
+    "idx_tup_fetch": 42,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "store_credentials",
+    "indexrelname": "uq_store_credentials_store_id",
+    "idx_scan": 54531,
+    "idx_tup_read": 54531,
+    "idx_tup_fetch": 54531,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "stores",
+    "indexrelname": "uq_stores_workspace_id_id",
+    "idx_scan": 404,
+    "idx_tup_read": 808,
+    "idx_tup_fetch": 808,
+    "size": "16 kB"
+  },
+  {
+    "schemaname": "public",
+    "relname": "store_goals",
+    "indexrelname": "pk_store_goals",
+    "idx_scan": 38132,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "finance_projections",
+    "indexrelname": "pk_finance_projections",
+    "idx_scan": 96431,
+    "idx_tup_read": 51048,
+    "idx_tup_fetch": 51048,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "supply_destination_snapshots",
+    "indexrelname": "pk_supply_destination_snapshots",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "supply_destination_sync",
+    "indexrelname": "pk_supply_destination_sync",
+    "idx_scan": 13984,
+    "idx_tup_read": 17372,
+    "idx_tup_fetch": 13984,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "store_events",
+    "indexrelname": "pk_store_events",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "supply_plans",
+    "indexrelname": "pk_supply_plans",
+    "idx_scan": 13,
+    "idx_tup_read": 15,
+    "idx_tup_fetch": 13,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "push_devices",
+    "indexrelname": "pk_push_devices",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "finance_days",
+    "indexrelname": "pk_finance_days",
+    "idx_scan": 2858,
+    "idx_tup_read": 45581,
+    "idx_tup_fetch": 6474,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "tax_settings",
+    "indexrelname": "pk_tax_settings",
+    "idx_scan": 50821,
+    "idx_tup_read": 14179,
+    "idx_tup_fetch": 14179,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "cost_imports",
+    "indexrelname": "ix_cost_imports_expires_at",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "product_costs",
+    "indexrelname": "pk_product_costs",
+    "idx_scan": 88067,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "supply_destination_sync",
+    "indexrelname": "ix_supply_destination_due",
+    "idx_scan": 1805400,
+    "idx_tup_read": 23288,
+    "idx_tup_fetch": 590,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "marketplace_variant_costs",
+    "indexrelname": "pk_marketplace_variant_costs",
+    "idx_scan": 532,
+    "idx_tup_read": 72,
+    "idx_tup_fetch": 72,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "inventory_settings",
+    "indexrelname": "pk_inventory_settings",
+    "idx_scan": 120,
+    "idx_tup_read": 7,
+    "idx_tup_fetch": 7,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "external_expenses",
+    "indexrelname": "pk_external_expenses",
+    "idx_scan": 91778,
+    "idx_tup_read": 842,
+    "idx_tup_fetch": 842,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "cost_imports",
+    "indexrelname": "pk_cost_imports",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "supply_plans",
+    "indexrelname": "ix_supply_plans_store_id",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "catalog_product_matches",
+    "indexrelname": "uq_catalog_match_left",
+    "idx_scan": 1388,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "catalog_product_matches",
+    "indexrelname": "uq_catalog_match_right",
+    "idx_scan": 30,
+    "idx_tup_read": 1443,
+    "idx_tup_fetch": 1443,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "import_issues",
+    "indexrelname": "uq_import_issues_workspace_id",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "import_issues",
+    "indexrelname": "pk_import_issues",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "push_devices",
+    "indexrelname": "uq_push_devices_token_digest",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "push_devices",
+    "indexrelname": "ix_push_devices_user_id",
+    "idx_scan": 4742,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "supply_plans",
+    "indexrelname": "ix_supply_plans_workspace_updated",
+    "idx_scan": 14,
+    "idx_tup_read": 12,
+    "idx_tup_fetch": 0,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "catalog_product_matches",
+    "indexrelname": "pk_catalog_product_matches",
+    "idx_scan": 5,
+    "idx_tup_read": 5592,
+    "idx_tup_fetch": 5592,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "store_events",
+    "indexrelname": "ix_store_events_day",
+    "idx_scan": 0,
+    "idx_tup_read": 0,
+    "idx_tup_fetch": 0,
+    "size": "8192 bytes"
+  },
+  {
+    "schemaname": "public",
+    "relname": "catalog_overrides",
+    "indexrelname": "pk_catalog_overrides",
+    "idx_scan": 104,
+    "idx_tup_read": 30,
+    "idx_tup_fetch": 30,
+    "size": "8192 bytes"
+  }
+]
+
+=== Database aggregate I/O ===
+[
+  {
+    "numbackends": 11,
+    "xact_commit": 4372882,
+    "xact_rollback": 389317,
+    "blks_read": 19083111,
+    "blks_hit": 1984661365,
+    "tup_returned": 2255974546,
+    "tup_fetched": 1142416532,
+    "tup_inserted": 11160637,
+    "tup_updated": 1844200,
+    "tup_deleted": 9147708,
+    "temp_files": 18,
+    "temp_bytes": 57311232,
+    "deadlocks": 0,
+    "blk_read_time": 0,
+    "blk_write_time": 0,
+    "stats_reset": null
+  }
+]
+
+=== Current wait aggregates (no session/query details) ===
+[
+  {
+    "backend_type": "client backend",
+    "state": "idle",
+    "wait_event_type": "Client",
+    "wait_event": "ClientRead",
+    "sessions": 10
+  },
+  {
+    "backend_type": "client backend",
+    "state": "active",
+    "wait_event_type": null,
+    "wait_event": null,
+    "sessions": 1
+  }
+]
+
+=== Database size ===
+[
+  {
+    "total": "393 MB",
+    "total_bytes": 412309171
+  }
+]
+

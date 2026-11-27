@@ -1,0 +1,39 @@
+{
+  "name": "FRONT",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "mob-add": "pnpm --filter mobile add",
+    "lint": "eslint . && pnpm --filter web lint",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "mobile": "pnpm --filter mobile",
+    "web": "pnpm --filter web",
+    "ts-check": "pnpm --filter mobile typecheck && pnpm --filter web typecheck",
+    "test": "pnpm --filter mobile test && pnpm --filter web test",
+    "api:generate": "pnpm --filter @app/api regen",
+    "check": "pnpm lint && pnpm ts-check && pnpm test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.10.1",
+      "onFail": "download"
+    }
+  },
+  "packageManager": "pnpm@12.10.1",
+  "type": "module",
+  "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
+    "eslint": "^9.39.5",
+    "eslint-config-expo": "~58.0.4",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "prettier": "^3.9.9",
+    "typescript-eslint": "^8.71.1"
+  }
+}

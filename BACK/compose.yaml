@@ -1,0 +1,187 @@
+name: perk-backend
+
+x-app: &app
+  image: perk-backend:dev
+  build: {context: ., target: runtime}
+  init: true
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  tmpfs: ["/tmp:size=128m,mode=1777"]
+  pids_limit: 150
+  mem_limit: 1g
+  logging:
+    driver: json-file
+    options: {max-size: "10m", max-file: "3"}
+
+x-runtime-env: &runtime-env
+  APP_ENV: ${APP_ENV:-local}
+  ACCOUNT_RECOVERY_URL: ${ACCOUNT_RECOVERY_URL:-http://localhost:3000/recover-factor}
+  TEAM_INVITE_URL: ${TEAM_INVITE_URL:-http://localhost:8081/invite}
+  LOG_LEVEL: INFO
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: 5432
+  POSTGRES_DB: ${POSTGRES_DB:-perk}
+  POSTGRES_USER: perk_app
+  POSTGRES_PASSWORD_FILE: /run/secrets/db_app_password
+  REDIS_HOST: redis
+  REDIS_PORT: 6379
+  REDIS_PASSWORD_FILE: /run/secrets/redis_password
+  SECURITY_FILE: /run/secrets/security_config
+  CORS_ORIGINS: ${CORS_ORIGINS:-["http://localhost:3000"]}
+  ALLOWED_HOSTS: ${ALLOWED_HOSTS:-["localhost","127.0.0.1","testserver"]}
+  COOKIE_SECURE: ${COOKIE_SECURE:-true}
+  WB_SERVICE_ID: ${WB_SERVICE_ID:-}
+  WB_PERSONAL_TOKEN_TEST_ALL_WORKSPACES: ${WB_PERSONAL_TOKEN_TEST_ALL_WORKSPACES:-false}
+  WB_PERSONAL_TOKEN_TEST_WORKSPACES: ${WB_PERSONAL_TOKEN_TEST_WORKSPACES:-[]}
+  WB_PERSONAL_TOKEN_TEST_UNTIL: ${WB_PERSONAL_TOKEN_TEST_UNTIL:-}
+  FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-127.0.0.1}
+  # 64 MiB per Argon2 operation; 4 parallel operations stay well inside mem_limit.
+  PASSWORD_HASH_CONCURRENCY: ${PASSWORD_HASH_CONCURRENCY:-4}
+  # Local defaults write codes to `docker compose logs api`. compose.dev.yaml adds Mailpit.
+  EMAIL_PROVIDER: ${EMAIL_PROVIDER:-console}
+  EMAIL_FROM: ${EMAIL_FROM:-PERK <no-reply@perk.local>}
+  SMTP_HOST: ${SMTP_HOST:-127.0.0.1}
+  SMTP_PORT: ${SMTP_PORT:-1025}
+  SMTP_SECURITY: ${SMTP_SECURITY:-none}
+  TELEGRAM_PROVIDER: ${TELEGRAM_PROVIDER:-fake}
+  TELEGRAM_GATEWAY_PROXY_URL: ${TELEGRAM_GATEWAY_PROXY_URL:-}
+  SMS_PROVIDER: ${SMS_PROVIDER:-fake}
+  TELEGRAM_BOT_PROVIDER: ${TELEGRAM_BOT_PROVIDER:-fake}
+  TELEGRAM_BOT_USERNAME: ${TELEGRAM_BOT_USERNAME:-perk_dev_bot}
+  PUSH_PROVIDER: ${PUSH_PROVIDER:-fake}
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-perk}
+      POSTGRES_USER: ${POSTGRES_ADMIN_USER:-perk}
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_admin_password
+    secrets: [db_admin_password]
+    volumes: [postgres_data:/var/lib/postgresql/data]
+    networks: [data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7.4-alpine
+    command: [redis-server, /run/secrets/redis_config]
+    secrets: [redis_config, redis_password]
+    volumes: [redis_data:/data]
+    networks: [data]
+    healthcheck:
+      test: ["CMD-SHELL", "REDISCLI_AUTH=$$(cat /run/secrets/redis_password) redis-cli ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  migrate:
+    <<: *app
+    command: [python, -m, scripts.migrate]
+    environment:
+      <<: *runtime-env
+      POSTGRES_USER: ${POSTGRES_ADMIN_USER:-perk}
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_admin_password
+      APP_DB_PASSWORD_FILE: /run/secrets/db_app_password
+    secrets: [db_admin_password, db_app_password]
+    networks: [data]
+    depends_on:
+      postgres: {condition: service_healthy}
+
+  api:
+    <<: *app
+    environment: *runtime-env
+    secrets: [db_app_password, redis_password, security_config]
+    networks: [data, egress]
+    ports: ["127.0.0.1:${API_PORT:-8000}:8000"]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health/ready', timeout=12)"]
+      interval: 15s
+      timeout: 13s
+      start_period: 15s
+      retries: 3
+
+  # WB synchronization: short page tasks on a fixed cadence.
+  worker:
+    <<: *app
+    command: [celery, -A, app.workers.celery_app:celery_app, worker, -Q, perk, -n, sync@%h, --loglevel=INFO, --concurrency=2]
+    environment: *runtime-env
+    secrets: [redis_password, db_app_password, security_config]
+    networks: [data, egress]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+
+  # Ozon I/O is isolated so its first import never blocks WB page tasks.
+  worker-ozon:
+    <<: *app
+    command: [celery, -A, app.workers.celery_app:celery_app, worker, -Q, perk-ozon, -n, ozon@%h, --loglevel=INFO, --concurrency=2]
+    environment: *runtime-env
+    secrets: [redis_password, db_app_password, security_config]
+    networks: [data, egress]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+
+  # Finance projection, snapshots, notifications: long tasks, isolated from sync.
+  worker-heavy:
+    <<: *app
+    command: [celery, -A, app.workers.celery_app:celery_app, worker, -Q, perk-heavy, -n, heavy@%h, --loglevel=INFO, --concurrency=1]
+    environment: *runtime-env
+    secrets: [redis_password, db_app_password, security_config]
+    networks: [data, egress]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+
+  beat:
+    <<: *app
+    command: [celery, -A, app.workers.celery_app:celery_app, beat, --loglevel=INFO, --schedule=/tmp/celerybeat-schedule]
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD_FILE: /run/secrets/redis_password
+    secrets: [redis_password]
+    networks: [data]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+
+  tests:
+    <<: *app
+    image: perk-backend:test
+    build: {context: ., target: test}
+    profiles: [tools]
+    environment:
+      <<: *runtime-env
+      APP_ENV: test
+      PERK_INTEGRATION_TESTS: "1"
+      TEST_ADMIN_USER: ${POSTGRES_ADMIN_USER:-perk}
+      TEST_ADMIN_PASSWORD_FILE: /run/secrets/db_admin_password
+    secrets: [db_app_password, db_admin_password, redis_password, security_config]
+    networks: [data]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+
+networks:
+  data: {internal: true}
+  egress: {}
+
+volumes:
+  postgres_data:
+  redis_data:
+
+secrets:
+  db_admin_password: {file: .secrets/db-admin-password}
+  db_app_password: {file: .secrets/db-app-password}
+  redis_password: {file: .secrets/redis-password}
+  security_config: {file: .secrets/security.json}
+  redis_config: {file: .secrets/redis.conf}

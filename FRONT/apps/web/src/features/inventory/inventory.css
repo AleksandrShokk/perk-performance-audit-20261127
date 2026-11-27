@@ -1,0 +1,415 @@
+.stock-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.8fr;
+  margin-bottom: 24px;
+  padding: 24px 0;
+}
+.stock-channel,
+.stock-cover-summary {
+  min-width: 0;
+  padding: 0 28px;
+}
+.stock-summary > :not(:last-child) {
+  border-right: 1px solid var(--border);
+}
+.stock-channel h2,
+.stock-cover-summary h2 {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  margin-bottom: 12px;
+}
+.stock-retail {
+  display: block;
+  font-size: clamp(22px, 2.3vw, 34px);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.stock-channel-units {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  color: var(--muted-foreground);
+  font-size: 14px;
+}
+.stock-channel-cost {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  justify-content: space-between;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  margin-top: 18px;
+  font-size: 13px;
+}
+.stock-channel-cost > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted-foreground);
+}
+.stock-channel-cost strong {
+  font-weight: 500;
+  white-space: nowrap;
+}
+.stock-cover-summary > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.stock-cover-summary > strong {
+  display: block;
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+.stock-cover-summary > span {
+  font-size: 14px;
+  color: var(--muted-foreground);
+}
+.stock-cover-summary > button {
+  margin-top: 3px;
+}
+.stock-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.stock-switch {
+  display: flex;
+  gap: 4px;
+}
+.stock-switch button {
+  font-size: 14px;
+  font-weight: 500;
+  padding: 9px 14px;
+  border-radius: 10px;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+.stock-switch button[aria-selected='true'] {
+  background: var(--secondary);
+  color: var(--primary);
+}
+.stock-switch button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.stock-filters {
+  margin-bottom: 16px;
+}
+.stock-table {
+  overflow: hidden;
+  padding: 0;
+}
+.stock-table-scroll {
+  max-height: clamp(360px, 55vh, 680px);
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+.stock-data {
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+  border-collapse: collapse;
+}
+.stock-data th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 14px 20px;
+  background: var(--card);
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+.stock-data td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.stock-data tr:last-child td {
+  border: 0;
+}
+.stock-data td:first-child {
+  width: 40%;
+}
+.stock-data th:nth-last-child(-n + 3),
+.stock-data td:nth-last-child(-n + 3) {
+  text-align: right;
+}
+.stock-data tbody tr:hover {
+  background: color-mix(in srgb, var(--secondary) 50%, transparent);
+}
+.stock-product-button {
+  text-align: left;
+  cursor: pointer;
+  max-width: 100%;
+}
+.stock-product-button:hover .product-label-title,
+.stock-store-button:hover {
+  color: var(--primary);
+}
+.stock-channel-cell strong {
+  display: block;
+  font-weight: 600;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.stock-data small {
+  display: block;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  margin-top: 4px;
+}
+.stock-channel-cell small {
+  white-space: nowrap;
+}
+.stock-cover-cell {
+  font-variant-numeric: tabular-nums;
+  max-width: 155px;
+  font-size: 13px;
+}
+.stock-store-button {
+  cursor: pointer;
+  text-align: left;
+  font-weight: 500;
+}
+.stock-mobile-store {
+  display: none !important;
+}
+.stock-details-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.35fr);
+  gap: 28px;
+}
+.stock-details-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 20px;
+}
+.stock-details-summary .stock-channel {
+  padding: 0;
+}
+.stock-details-summary .stock-retail {
+  font-size: 22px;
+}
+.stock-details-summary .stock-channel-cost {
+  flex-direction: column;
+}
+.stock-position-cover {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  padding: 16px 0;
+  margin: 14px 0 0;
+  border-bottom: 1px solid var(--border);
+}
+.stock-position-cover span {
+  color: var(--muted-foreground);
+}
+.stock-position-cover strong {
+  font-weight: 500;
+}
+.stock-detail-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+}
+.stock-detail-table {
+  overflow: auto;
+}
+.stock-detail-table table {
+  width: 100%;
+  font-size: 13px;
+  text-align: left;
+  border-collapse: collapse;
+}
+.stock-detail-table th {
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.stock-detail-table td,
+.stock-detail-table th {
+  padding: 12px 6px;
+  border-bottom: 1px solid var(--border);
+}
+.stock-detail-table td:last-child,
+.stock-detail-table th:last-child {
+  text-align: right;
+}
+.stock-detail-table .empty-state {
+  padding: 24px 10px;
+}
+.stock-settings-dialog {
+  max-width: 420px !important;
+}
+.stock-setting-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid var(--border);
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.stock-setting-option:has(input:checked) {
+  border-color: var(--primary);
+  background: var(--secondary);
+}
+.stock-setting-option input {
+  accent-color: var(--primary);
+}
+.stock-setting-option small {
+  display: block;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  margin-top: 4px;
+}
+.stock-settings-dialog form > button {
+  margin-top: 8px;
+}
+@media (max-width: 1100px) {
+  .stock-channel,
+  .stock-cover-summary {
+    padding: 0 20px;
+  }
+  .stock-data td,
+  .stock-data th {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  .stock-data td:first-child {
+    width: 35%;
+  }
+}
+@media (max-width: 800px) {
+  .stock-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+  .stock-summary > :nth-child(2) {
+    border-right: 0;
+  }
+  .stock-cover-summary {
+    grid-column: 1/-1;
+    border-top: 1px solid var(--border);
+    padding-top: 18px;
+    margin-top: 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .stock-cover-summary h2 {
+    margin: 0;
+  }
+  .stock-cover-summary > strong {
+    font-size: 24px;
+  }
+  .stock-store {
+    display: none;
+  }
+  .stock-mobile-store {
+    display: block !important;
+    margin-left: 56px;
+  }
+  .stock-data td:first-child {
+    width: 40%;
+  }
+  .stock-details-grid {
+    grid-template-columns: 1fr;
+  }
+  .stock-details-grid .product-gallery {
+    max-width: 320px;
+    width: 100%;
+    margin: auto;
+  }
+}
+@media (max-width: 560px) {
+  .stock-summary {
+    padding-top: 18px;
+    padding-bottom: 18px;
+  }
+  .stock-channel,
+  .stock-cover-summary {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  .stock-retail {
+    font-size: 21px;
+  }
+  .stock-channel-cost {
+    flex-direction: column;
+  }
+  .stock-channel h2 {
+    margin-bottom: 8px;
+  }
+  .stock-data th,
+  .stock-data td {
+    padding: 12px 8px;
+  }
+  .stock-data {
+    font-size: 12px;
+  }
+  .stock-data td:first-child {
+    min-width: 150px;
+  }
+  .stock-channel-cell small {
+    font-size: 10px;
+  }
+  .stock-cover-cell {
+    font-size: 11px;
+  }
+  .stock-data .product-label img,
+  .stock-data .product-label > :first-child {
+    display: none;
+  }
+  .stock-mobile-store {
+    margin-left: 0;
+  }
+  .stock-details-summary {
+    gap: 14px;
+  }
+  .stock-details-summary .stock-retail {
+    font-size: 20px;
+  }
+}
+
+.stock-display-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+.stock-display-controls .native-select {
+  height: 38px;
+  font-size: 11px;
+  margin-left: 0;
+  width: auto;
+  max-width: none;
+}
+@media (max-width: 640px) {
+  .stock-display-controls {
+    width: 100%;
+    margin-left: 0;
+  }
+  .stock-display-controls .native-select {
+    min-width: 0;
+    flex: 1;
+  }
+}
