@@ -5,6 +5,7 @@ from sqlalchemy import create_engine, event, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
+from app.core import timing
 from app.core.config import Settings
 
 
@@ -13,8 +14,8 @@ def build_engine(settings: Settings) -> Engine:
         settings.database_url,
         hide_parameters=True,
         pool_pre_ping=True,
-        pool_size=5,
-        max_overflow=5,
+        pool_size=getattr(settings, "db_pool_size", 5),
+        max_overflow=getattr(settings, "db_pool_overflow", 5),
         pool_timeout=3,
         connect_args={
             "connect_timeout": 3,
@@ -31,6 +32,7 @@ def build_engine(settings: Settings) -> Engine:
             record.info["runtime_privileged"] = cursor.fetchone()[0]
         connection.rollback()
 
+    timing.instrument_engine(engine)
     return engine
 
 

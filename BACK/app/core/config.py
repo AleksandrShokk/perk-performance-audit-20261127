@@ -44,6 +44,12 @@ class Settings(BaseSettings):
     session_ttl_seconds: int = Field(default=604800, ge=900, le=604800)
     auth_limit_per_minute: int = Field(default=10, ge=1, le=100)
     api_limit_per_minute: int = Field(default=120, ge=10, le=1000)
+    # Per process. API processes × (pool + overflow) plus workers must stay below
+    # PostgreSQL max_connections (80 in production).
+    db_pool_size: int = Field(default=5, ge=1, le=30)
+    db_pool_overflow: int = Field(default=5, ge=0, le=30)
+    # Requests slower than this are logged with their route and DB/crypto split.
+    slow_request_ms: int = Field(default=1000, ge=50, le=60000)
     wb_service_id: str | None = None
     # Explicit private-beta exception; empty by default and expires automatically.
     wb_personal_token_test_all_workspaces: bool = False

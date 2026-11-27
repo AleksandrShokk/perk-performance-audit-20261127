@@ -14,6 +14,7 @@ from app.core.config import Settings, get_settings
 from app.core.error_messages import validation_message
 from app.core.errors import RequestIdMiddleware
 from app.core.logging import configure_logging
+from app.core.timing import TimingMiddleware
 from app.db.session import build_engine
 from app.integrations.notifications import build_messenger, build_notifier
 from app.integrations.ozon.client import OzonClient
@@ -78,9 +79,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "If-None-Match",
             "X-Request-ID",
         ],
-        expose_headers=["Retry-After", "ETag", "X-Request-ID"],
+        expose_headers=["Retry-After", "ETag", "X-Request-ID", "Server-Timing"],
     )
     application.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.allowed_hosts)
+    # Server-Timing on every API response and a log line for slow requests.
+    application.add_middleware(TimingMiddleware, slow_ms=getattr(settings, "slow_request_ms", 1000))
     application.add_middleware(RequestIdMiddleware)
 
     @application.exception_handler(RequestValidationError)

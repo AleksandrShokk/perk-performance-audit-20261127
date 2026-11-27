@@ -531,6 +531,13 @@ def calculate_snapshot(
     )
 
 
+# The cache key contains the data revision, so new or edited data always misses it and a
+# long lifetime cannot serve stale numbers. It only decides how long an unused report
+# survives: with 15 minutes, a colleague opening the site once a day always paid the
+# full recalculation.
+CACHE_SECONDS = 12 * 3600
+
+
 def report(db, redis, vault, workspace_id, store_id, start, end, currency, limit, offset):
     result = None
     for _ in range(3):
@@ -540,6 +547,7 @@ def report(db, redis, vault, workspace_id, store_id, start, end, currency, limit
         )
         key = "perk:profit:v10:" + vault.digest("profit-cache", aad)
 
+        hit = False
         try:
             encrypted = redis.get(key)
             if isinstance(encrypted, (str, bytes)):
@@ -548,6 +556,7 @@ def report(db, redis, vault, workspace_id, store_id, start, end, currency, limit
                         encrypted.decode() if isinstance(encrypted, bytes) else encrypted, aad
                     )
                 )
+                hit = True
             else:
                 result = calculate_snapshot(
                     db,
@@ -584,7 +593,11 @@ def report(db, redis, vault, workspace_id, store_id, start, end, currency, limit
         if result.status == "ready":
             result.updated_at = timestamps["partial" if result.is_partial else "published"]
         try:
-            redis.set(key, vault.seal(result.model_dump_json(), aad), ex=900)
+            if hit:
+                # Already stored under this revision: extend it instead of re-encrypting.
+                redis.expire(key, CACHE_SECONDS)
+            else:
+                redis.set(key, vault.seal(result.model_dump_json(), aad), ex=CACHE_SECONDS)
         except RedisError:
             pass
         return result

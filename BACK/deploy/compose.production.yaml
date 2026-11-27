@@ -15,14 +15,27 @@ services:
     <<: *service
     mem_limit: 2g
     shm_size: 512m
-    command: [postgres, -c, shared_buffers=512MB, -c, work_mem=8MB, -c, maintenance_work_mem=128MB, -c, max_connections=80, -c, timezone=UTC]
+    # pg_stat_statements: real top of slow SQL (after restart run once as admin:
+    # CREATE EXTENSION IF NOT EXISTS pg_stat_statements;). track_io_timing adds disk time.
+    command: [postgres, -c, shared_buffers=512MB, -c, work_mem=8MB, -c, maintenance_work_mem=128MB, -c, max_connections=80, -c, timezone=UTC, -c, shared_preload_libraries=pg_stat_statements, -c, pg_stat_statements.track=top, -c, track_io_timing=on]
   redis:
     <<: *service
     mem_limit: 256m
   api:
     <<: *service
-    mem_limit: 768m
-    environment: *production-env
+    # 3 processes: report decryption and JSON work is CPU-bound and one Python process
+    # runs it on one core (GIL), so parallel dashboard requests queued behind each other.
+    # Each process: ~200 MB + up to PASSWORD_HASH_CONCURRENCY × 64 MiB during logins,
+    # and DB_POOL_SIZE + DB_POOL_OVERFLOW connections (3 × 10 = 30 of max_connections 80).
+    mem_limit: 1536m
+    pids_limit: 300
+    environment:
+      <<: *production-env
+      WEB_CONCURRENCY: ${API_WORKERS:-3}
+      PASSWORD_HASH_CONCURRENCY: ${PASSWORD_HASH_CONCURRENCY:-2}
+      DB_POOL_SIZE: 5
+      DB_POOL_OVERFLOW: 5
+      SLOW_REQUEST_MS: 1000
     ports: !reset []
     secrets: [smtp_password, telegram_gateway_token]
     networks:

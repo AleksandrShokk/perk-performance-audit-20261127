@@ -583,6 +583,11 @@ def metric_snapshot(db, workspace_id, store_id):
     return version, selected, revision
 
 
+# Cache keys contain the metric revision (see cache_address): a long lifetime never serves
+# outdated numbers, it only keeps rarely opened periods ready between visits.
+CACHE_SECONDS = 12 * 3600
+
+
 def cached_metrics(
     db, redis, vault, workspace_id, store_id, start, end, limit=100, sales_basis="auto"
 ):
@@ -613,11 +618,17 @@ def cached_metrics(
         if revision != after:
             continue
         result["snapshot_stable"] = True
-        if not hit:
-            try:
-                redis.set(key, vault.seal(json.dumps(result, separators=(",", ":")), aad), ex=900)
-            except RedisError:
-                pass
+        try:
+            if hit:
+                redis.expire(key, CACHE_SECONDS)
+            else:
+                redis.set(
+                    key,
+                    vault.seal(json.dumps(result, separators=(",", ":")), aad),
+                    ex=CACHE_SECONDS,
+                )
+        except RedisError:
+            pass
         return result, version
     # Continuous concurrent updates must never be presented as a complete stable period.
     result["snapshot_stable"] = False

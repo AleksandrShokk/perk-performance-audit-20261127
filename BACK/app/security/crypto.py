@@ -5,6 +5,7 @@ import json
 import os
 import secrets
 import threading
+import time
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -12,6 +13,8 @@ from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerificationError
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from fastapi import HTTPException
+
+from app.core import timing
 
 PASSWORD_HASHER = PasswordHasher(time_cost=3, memory_cost=65536, parallelism=1)
 # Unknown users incur the same expensive password verification as known users.
@@ -52,18 +55,26 @@ class SecretVault:
             raise ValueError("Invalid encryption key configuration")
         if len(self.hmac_key) != 32:
             raise ValueError("Invalid authentication key configuration")
+        # AESGCM objects are immutable and thread-safe: build each key schedule once
+        # instead of on every stored row, report and cache entry.
+        self.ciphers = {name: AESGCM(key) for name, key in self.keys.items()}
 
     def seal(self, value: str, context: str) -> str:
+        started = time.perf_counter()
         nonce = secrets.token_bytes(12)
-        ciphertext = AESGCM(self.keys[self.active_key]).encrypt(
-            nonce, value.encode(), context.encode()
-        )
-        return self.active_key + "." + base64.urlsafe_b64encode(nonce + ciphertext).decode()
+        ciphertext = self.ciphers[self.active_key].encrypt(nonce, value.encode(), context.encode())
+        sealed = self.active_key + "." + base64.urlsafe_b64encode(nonce + ciphertext).decode()
+        timing.add("crypto", time.perf_counter() - started)
+        return sealed
 
     def open(self, value: str, context: str) -> str:
+        started = time.perf_counter()
         key_id, encoded = value.split(".", 1)
         data = base64.urlsafe_b64decode(encoded)
-        return AESGCM(self.keys[key_id]).decrypt(data[:12], data[12:], context.encode()).decode()
+        try:
+            return self.ciphers[key_id].decrypt(data[:12], data[12:], context.encode()).decode()
+        finally:
+            timing.add("crypto", time.perf_counter() - started)
 
     def digest(self, purpose: str, value: str) -> str:
         return hmac.new(self.hmac_key, f"{purpose}:{value}".encode(), hashlib.sha256).hexdigest()
