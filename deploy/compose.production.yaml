@@ -21,6 +21,9 @@ services:
   redis:
     <<: *service
     mem_limit: 256m
+    # Stay below the container limit: when full, evict only keys with a lifetime (report
+    # caches, leases, counters). Celery queues have none and are never evicted.
+    command: [redis-server, /run/secrets/redis_config, --maxmemory, 192mb, --maxmemory-policy, volatile-lru]
   api:
     <<: *service
     # 3 processes: report decryption and JSON work is CPU-bound and one Python process
