@@ -63,6 +63,7 @@ def list_products(
             can_cost,
             limit,
             offset,
+            redis=request.app.state.redis,
         )
 
     return respond(

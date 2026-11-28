@@ -314,7 +314,28 @@ def warm_defaults():
         ("net_profit", params),
         ("forecast", {"window": inventory.WINDOW}),
         ("goals", {"month": month}),
+        *(("funnel", period_params(start, end)) for start, end in home_funnel_periods()),
     ]
+
+
+def home_funnel_periods():
+    """The home screen's periods and their comparison periods, as the web app requests them.
+
+    Periods end yesterday, so every day brings new ones; without warming, the first visitor
+    of the day waited for each funnel calculation (3-4 s for 28 days).
+    Mirrors HOME_PERIODS / homePeriod / previousPeriod in FRONT/packages/analytics.
+    """
+    end = moscow_today() - timedelta(days=1)
+    ranges = [default_period(days) for days in (7, 14, 28)]
+    ranges.append((end - timedelta(days=end.weekday()), end))
+    result = []
+    for start, stop in ranges:
+        span = (stop - start).days + 1
+        before = start - timedelta(days=1)
+        for period in ((start, stop), (before - timedelta(days=span - 1), before)):
+            if period[0] >= FINANCE_START and period not in result and period != default_period():
+                result.append(period)
+    return result
 
 
 def warm_report_periods():

@@ -14,12 +14,19 @@ from app.modules.finance.xlsx import HEADERS, build_template, read_rows
 
 
 def test_native_traffic_and_confirmed_empty_days():
+    requested = []
+
     def handler(request):
         assert request.url.path == "/v1/analytics/data"
         body = json.loads(request.content)
         assert body["metrics"] == ["hits_view", "hits_view_pdp", "hits_tocart"] and body[
             "dimension"
         ] == ["sku", "day"]
+        # One day per request: a store's day fits one page, so pages never shift.
+        assert body["date_from"] == body["date_to"]
+        requested.append(body["date_from"])
+        if body["date_from"] != "2026-10-01":
+            return httpx.Response(200, json={"result": {"data": [], "totals": [0, 0, 0]}})
         return httpx.Response(
             200,
             json={
@@ -38,6 +45,7 @@ def test_native_traffic_and_confirmed_empty_days():
     result = TrafficClient("1", "test", transport=httpx.MockTransport(handler)).days(
         DAY, date(2026, 10, 2)
     )
+    assert requested == ["2026-10-01", "2026-10-02"]
     assert result[DAY] == {
         "impressions": 1000,
         "opens": 100,

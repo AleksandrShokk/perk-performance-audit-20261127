@@ -1,5 +1,6 @@
 """Native daily SKU traffic, with resumable pages under Ozon's one-minute quota."""
 
+import logging
 from datetime import date, timedelta
 from decimal import Decimal
 
@@ -10,6 +11,7 @@ METRICS = ("hits_view", "hits_view_pdp", "hits_tocart")
 FIELDS = ("impressions", "opens", "carts")
 PAGE_SIZE = 1000
 MAX_ROWS = 200000
+logger = logging.getLogger(__name__)
 
 
 class TrafficClient(SellerReader):
@@ -20,8 +22,34 @@ class TrafficClient(SellerReader):
         self.checkpoint = checkpoint
 
     def days(self, start, end):
+        """One request per day: a day of a store fits one page, so Ozon's unsorted offset
+        pagination (rows repeated or skipped between pages) never splits it. Each finished
+        day is kept in the checkpoint, so a failed day never restarts the whole period."""
+        rows = []
+        day = start
+        while day <= end:
+            rows.extend(self.day_rows(day))
+            day += timedelta(days=1)
+        result = {
+            start + timedelta(days=index): {
+                **dict.fromkeys(FIELDS, 0),
+                "products": {},
+                "version": 2,
+            }
+            for index in range((end - start).days + 1)
+        }
+        for row in rows:
+            values = {field: row[field] for field in FIELDS}
+            target = result[date.fromisoformat(row["day"])]
+            target["products"][row["sku"]] = values
+            for field in FIELDS:
+                target[field] += values[field]
+        return result
+
+    def day_rows(self, day):
+        start = end = day
         state = (
-            self.checkpoint.load([str(start), str(end), "traffic-v2"])
+            self.checkpoint.load([str(start), str(end), "traffic-v3"])
             if self.checkpoint
             else {"completed": [], "rows": []}
         )
@@ -93,7 +121,15 @@ class TrafficClient(SellerReader):
                         raise ValueError("totals")
                     if offset == 0 and totals is not None:
                         state["totals"] = list(map(int, totals))
-                except KeyError, IndexError, TypeError, ValueError, ArithmeticError:
+                except (KeyError, IndexError, TypeError, ValueError, ArithmeticError) as error:
+                    # The check that failed, never the provider's data.
+                    logger.warning(
+                        "ozon_traffic_invalid:%s offset=%d",
+                        error.args[0]
+                        if isinstance(error, ValueError) and error.args
+                        else type(error).__name__,
+                        offset,
+                    )
                     raise OzonImportError("ozon_invalid_response") from None
                 state["rows"].extend(parsed)
                 state["completed"].append(offset)
@@ -107,19 +143,6 @@ class TrafficClient(SellerReader):
         ):
             if self.checkpoint:
                 self.checkpoint.clear()
+            logger.warning("ozon_traffic_invalid:totals_mismatch pages=%d", len(state["completed"]))
             raise OzonImportError("ozon_invalid_response")
-        result = {
-            start + timedelta(days=index): {
-                **dict.fromkeys(FIELDS, 0),
-                "products": {},
-                "version": 2,
-            }
-            for index in range((end - start).days + 1)
-        }
-        for row in state["rows"]:
-            values = {field: row[field] for field in FIELDS}
-            target = result[date.fromisoformat(row["day"])]
-            target["products"][row["sku"]] = values
-            for field in FIELDS:
-                target[field] += values[field]
-        return result
+        return state["rows"]

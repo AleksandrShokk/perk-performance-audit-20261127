@@ -335,6 +335,17 @@ def position(
     )
 
 
+INVENTORY_SOURCES = [
+    Source.CATALOG,
+    Source.STOCKS,
+    Source.FBS,
+    Source.PRICES,
+    Source.SUPPLY_DEMAND,
+    Source.SUPPLY_DEMAND_FBS,
+    Source.STOCK_HISTORY,
+]
+
+
 def overview(
     db,
     vault,
@@ -347,6 +358,7 @@ def overview(
     limit=0,
     offset=0,
     coverage_channel="fbo",
+    redis=None,
 ):
     if all(store.marketplace == "wildberries" for store in stores):
         return wb_overview(
@@ -367,19 +379,51 @@ def overview(
     reports = []
     for store in stores:
         reader = ozon_overview if store.marketplace == "ozon" else wb_overview
-        report = reader(
-            db,
-            vault,
-            workspace_id,
-            [store] if reader is wb_overview else store,
-            currency,
-            can_cost,
-            query,
-            only_stock,
-            50000 if limit else 0,
-            0,
-            coverage_channel,
-        )
+
+        def build(reader=reader, store=store):
+            return reader(
+                db,
+                vault,
+                workspace_id,
+                [store] if reader is wb_overview else store,
+                currency,
+                can_cost,
+                query,
+                only_stock,
+                50000 if limit else 0,
+                0,
+                coverage_channel,
+            )
+
+        if reader is wb_overview:
+            from app.core.response_cache import (
+                PART_CACHE_SECONDS,
+                SEARCH_CACHE_SECONDS,
+                cached_model,
+                wb_fingerprint,
+            )
+
+            # The WB part of "all stores" is the expensive one; reuse it until its inputs
+            # change, exactly like a single-store answer.
+            report = cached_model(
+                redis,
+                vault,
+                "inventory-wb-part",
+                wb_fingerprint(db, workspace_id, [store], INVENTORY_SOURCES),
+                {
+                    "currency": currency,
+                    "can_cost": can_cost,
+                    "q": query,
+                    "in_stock": only_stock,
+                    "all_positions": bool(limit),
+                    "channel": str(coverage_channel),
+                },
+                InventoryOverview,
+                build,
+                SEARCH_CACHE_SECONDS if query else PART_CACHE_SECONDS,
+            )
+        else:
+            report = build()
         reports.append(report)
     items = [item for report in reports for item in report.items]
     items.sort(key=lambda item: (item.product.vendor_code.casefold(), item.product.id))

@@ -584,8 +584,10 @@ def metric_snapshot(db, workspace_id, store_id):
 
 
 # Cache keys contain the metric revision (see cache_address): a long lifetime never serves
-# outdated numbers, it only keeps rarely opened periods ready between visits.
-CACHE_SECONDS = 12 * 3600
+# outdated numbers. The key changes with every metric publication (sales: every 15 min), so
+# a long lifetime would only accumulate superseded versions; warm_store refreshes the
+# standard periods anyway.
+CACHE_SECONDS = 2 * 3600
 
 
 def cached_metrics(

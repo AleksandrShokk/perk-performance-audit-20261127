@@ -67,6 +67,54 @@ def test_pagination_resumes_after_rate_limit_without_repeating_first_page(monkey
     assert len(result[DAY]["products"]) == 3
 
 
+class DayCheckpoints:
+    """Like the Redis checkpoint: one saved state per requested day."""
+
+    def __init__(self):
+        self.states, self.current = {}, None
+
+    def load(self, keys):
+        self.current = tuple(keys)
+        return copy.deepcopy(self.states.get(self.current, {"completed": [], "rows": []}))
+
+    def save(self, value):
+        self.states[self.current] = copy.deepcopy(value)
+
+    def clear(self):
+        self.states.pop(self.current, None)
+
+
+def test_finished_days_survive_a_rate_limit_and_a_bad_day_restarts_alone():
+    second = date(2026, 10, 2)
+    checkpoint, requested, broken = DayCheckpoints(), [], [True]
+
+    def handler(request):
+        day = json.loads(request.content)["date_from"]
+        requested.append(day)
+        totals = [999, 5, 1] if day == str(second) and broken[0] else [10, 5, 1]
+        return httpx.Response(
+            200,
+            json={
+                "result": {
+                    "data": [{"dimensions": [{"id": "1"}, {"id": day}], "metrics": [10, 5, 1]}],
+                    "totals": totals,
+                }
+            },
+        )
+
+    with pytest.raises(OzonImportError):
+        traffic.TrafficClient(
+            "1", "test", checkpoint=checkpoint, transport=httpx.MockTransport(handler)
+        ).days(DAY, second)
+    broken[0] = False
+    result = traffic.TrafficClient(
+        "1", "test", checkpoint=checkpoint, transport=httpx.MockTransport(handler)
+    ).days(DAY, second)
+    # The first day was not requested again; only the inconsistent day was.
+    assert requested == [str(DAY), str(second), str(second)]
+    assert result[DAY]["opens"] == 5 and result[second]["opens"] == 5
+
+
 def test_inconsistent_provider_totals_never_publish_a_partial_page():
     response = {
         "result": {

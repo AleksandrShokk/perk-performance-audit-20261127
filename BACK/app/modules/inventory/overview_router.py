@@ -4,25 +4,15 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, Query, Request
 
 from app.core.response_cache import SEARCH_CACHE_SECONDS, respond, wb_fingerprint
-from app.integrations.wildberries.data import Source
 from app.modules.accounts.access import allows
 from app.modules.accounts.models import Workspace
 from app.modules.accounts.reporting import reporting_stores
 from app.modules.accounts.router import require_workspace
 from app.modules.auth.dependencies import DB, FullIdentity
-from app.modules.inventory.overview import overview
+from app.modules.inventory.overview import INVENTORY_SOURCES, overview
 from app.modules.inventory.overview_schemas import CoverageChannel, InventoryOverview
 
 router = APIRouter(prefix="/workspaces/{workspace_id}", tags=["Inventory"])
-INVENTORY_SOURCES = [
-    Source.CATALOG,
-    Source.STOCKS,
-    Source.FBS,
-    Source.PRICES,
-    Source.SUPPLY_DEMAND,
-    Source.SUPPLY_DEMAND_FBS,
-    Source.STOCK_HISTORY,
-]
 
 
 @router.get(
@@ -60,6 +50,7 @@ def inventory_overview(
             limit,
             offset,
             coverage_channel,
+            redis=request.app.state.redis,
         )
 
     # The full stock model decrypts and assembles every SKU (~1.3 s); every parameter

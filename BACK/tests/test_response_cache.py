@@ -168,3 +168,39 @@ def test_funnel_labels_are_searched_once_and_misses_expire_sooner(vault):
     # Another store never sees these entries.
     assert product_labels.LabelCache(redis, vault, "w", "x", None, None).known({"1"}) == {}
     assert all("VEND" not in value for value in redis.values.values())
+
+
+def test_part_of_a_response_is_cached_as_its_model(vault):
+    redis, calls = FakeRedis(), []
+
+    def build():
+        calls.append(1)
+        return Page(total=3, items=["a"])
+
+    first = response_cache.cached_model(redis, vault, "part", ["r"], {}, Page, build)
+    second = response_cache.cached_model(redis, vault, "part", ["r"], {}, Page, build)
+    assert first == second == Page(total=3, items=["a"]) and first is not second
+    assert len(calls) == 1
+    assert response_cache.cached_model(None, vault, "part", ["r"], {}, Page, build) == first
+    assert len(calls) == 2
+
+
+def test_home_funnel_periods_match_the_web_app(monkeypatch):
+    from app.modules.insights import compute
+
+    # Friday 28.11.2026: yesterday is Thursday 27.11.
+    monkeypatch.setattr(compute, "moscow_today", lambda: date(2026, 11, 28))
+    periods = compute.home_funnel_periods()
+    expected = [
+        (date(2026, 11, 21), date(2026, 11, 27)),  # 7 days, as in the HAR
+        (date(2026, 11, 14), date(2026, 11, 20)),  # its comparison period
+        (date(2026, 11, 14), date(2026, 11, 27)),  # 14 days
+        (date(2026, 10, 31), date(2026, 11, 13)),
+        (date(2026, 10, 31), date(2026, 11, 27)),  # 28 days, as in the HAR
+        (date(2026, 10, 3), date(2026, 10, 30)),
+        (date(2026, 11, 23), date(2026, 11, 27)),  # week: Monday..yesterday
+        (date(2026, 11, 18), date(2026, 11, 22)),
+    ]
+    assert [p for p in expected if p != compute.default_period()] == periods
+    warmed = [params for kind, params in compute.warm_defaults() if kind == "funnel"]
+    assert {"date_from": "2026-10-31", "date_to": "2026-11-27", "currency": None} in warmed

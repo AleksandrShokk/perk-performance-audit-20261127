@@ -23,7 +23,9 @@ from app.modules.sync.schemas import moscow_today
 
 # Bump when the shape or the calculation of a cached response changes.
 VERSION = 1
-CACHE_SECONDS = 12 * 3600
+CACHE_SECONDS = 3 * 3600
+# Whole WB part of an "all stores" answer (every position): megabytes, keep it shorter.
+PART_CACHE_SECONDS = 3600
 # Free-text searches produce many distinct keys; keep them briefly.
 SEARCH_CACHE_SECONDS = 600
 STALE_AFTER = timedelta(days=2)
@@ -70,6 +72,37 @@ def wb_fingerprint(db, workspace_id, stores, sources):
     return parts
 
 
+def address(vault, namespace, fingerprint, params):
+    material = json.dumps(
+        [namespace, VERSION, fingerprint, params],
+        default=str,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    digest = vault.digest("response-cache", material)
+    return f"perk:response:{namespace}:{digest}", f"perk-response:v{VERSION}:{digest}"
+
+
+def cached_body(redis, vault, namespace, fingerprint, params, build, seconds=None):
+    """JSON body for (fingerprint, params): from Redis, or built, stored and returned."""
+    seconds = seconds or CACHE_SECONDS
+    key, aad = address(vault, namespace, fingerprint, params)
+    try:
+        sealed = redis.get(key)
+        if isinstance(sealed, (str, bytes)):
+            body = vault.open(sealed.decode() if isinstance(sealed, bytes) else sealed, aad)
+            redis.expire(key, seconds)
+            return body
+    except RedisError, InvalidTag, ValueError:
+        pass
+    body = build().model_dump_json()
+    try:
+        redis.set(key, vault.seal(body, aad), ex=seconds)
+    except RedisError:
+        pass
+    return body
+
+
 def respond(
     request,
     namespace: str,
@@ -84,28 +117,15 @@ def respond(
     """
     if fingerprint is None:
         return build()
-    seconds = seconds or CACHE_SECONDS
     state = request.app.state
-    vault, redis = state.vault, state.redis
-    material = json.dumps(
-        [namespace, VERSION, fingerprint, params],
-        default=str,
-        sort_keys=True,
-        separators=(",", ":"),
-    )
-    digest = vault.digest("response-cache", material)
-    key, aad = f"perk:response:{namespace}:{digest}", f"perk-response:v{VERSION}:{digest}"
-    try:
-        sealed = redis.get(key)
-        if isinstance(sealed, (str, bytes)):
-            body = vault.open(sealed.decode() if isinstance(sealed, bytes) else sealed, aad)
-            redis.expire(key, seconds)
-            return Response(body, media_type="application/json")
-    except RedisError, InvalidTag, ValueError:
-        pass
-    body = build().model_dump_json()
-    try:
-        redis.set(key, vault.seal(body, aad), ex=seconds)
-    except RedisError:
-        pass
+    body = cached_body(state.redis, state.vault, namespace, fingerprint, params, build, seconds)
     return Response(body, media_type="application/json")
+
+
+def cached_model(redis, vault, namespace, fingerprint, params, model, build, seconds=None):
+    """The same cache for a part of a larger response (e.g. the WB part of "all stores")."""
+    if redis is None or fingerprint is None:
+        return build()
+    return model.model_validate_json(
+        cached_body(redis, vault, namespace, fingerprint, params, build, seconds)
+    )

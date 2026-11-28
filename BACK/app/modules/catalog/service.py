@@ -177,6 +177,7 @@ def products(
     limit,
     offset,
     identities=None,
+    redis=None,
 ):
     if all(store.marketplace == "wildberries" for store in stores):
         return wb_products(
@@ -196,21 +197,52 @@ def products(
         )
     from app.modules.catalog import ozon_read
 
-    page = wb_products(
-        db,
-        vault,
-        workspace_id,
-        [store for store in stores if store.marketplace == "wildberries"],
-        currency,
-        query,
-        only_stock,
-        missing_cost,
-        can_stock,
-        can_cost,
-        None,
-        0,
-        identities,
-    )
+    wb_stores = [store for store in stores if store.marketplace == "wildberries"]
+
+    def build():
+        return wb_products(
+            db,
+            vault,
+            workspace_id,
+            wb_stores,
+            currency,
+            query,
+            only_stock,
+            missing_cost,
+            can_stock,
+            can_cost,
+            None,
+            0,
+            identities,
+        )
+
+    if identities is None and wb_stores:
+        from app.core.response_cache import (
+            PART_CACHE_SECONDS,
+            SEARCH_CACHE_SECONDS,
+            cached_model,
+            wb_fingerprint,
+        )
+
+        page = cached_model(
+            redis,
+            vault,
+            "catalog-wb-part",
+            wb_fingerprint(db, workspace_id, wb_stores, [Source.CATALOG, Source.STOCKS]),
+            {
+                "currency": currency,
+                "q": query,
+                "in_stock": only_stock,
+                "missing_cost": missing_cost,
+                "can_stock": can_stock,
+                "can_cost": can_cost,
+            },
+            ProductPage,
+            build,
+            SEARCH_CACHE_SECONDS if query else PART_CACHE_SECONDS,
+        )
+    else:
+        page = build()
     items = list(page.items)
     loading, partial = page.is_loading, page.is_partial
     error_code = None

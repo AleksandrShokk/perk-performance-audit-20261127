@@ -532,10 +532,10 @@ def calculate_snapshot(
 
 
 # The cache key contains the data revision, so new or edited data always misses it and a
-# long lifetime cannot serve stale numbers. It only decides how long an unused report
-# survives: with 15 minutes, a colleague opening the site once a day always paid the
-# full recalculation.
-CACHE_SECONDS = 12 * 3600
+# longer lifetime cannot serve stale numbers. It decides how long an unused report
+# survives; superseded revisions also stay until it ends, so it is bounded to keep Redis
+# (shared with the task queue, maxmemory 192 MB) from filling with old versions.
+CACHE_SECONDS = 3 * 3600
 
 
 def report(db, redis, vault, workspace_id, store_id, start, end, currency, limit, offset):
